@@ -247,7 +247,7 @@ export async function* streamChat(opts: StreamChatOpts): AsyncGenerator<string> 
     hide: saeedTools.hide,
     show: saeedTools.show,
   };
-  const activeTools = providerId === 'hermes' ? hermesTools : merlinTools;
+  const activeTools = providerId === 'hermes' ? hermesTools : saeedTools;
   const args = {
     model,
     system: buildSystemPrompt(ctx),
