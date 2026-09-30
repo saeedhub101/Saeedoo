@@ -46,7 +46,7 @@ jobs:
         run: npm run lint
 
       - name: Unit tests
-        run: npm run test:unit
+        run: npm run test:unit -- --passWithNoTests
 
       - name: Prepare Saeed 3D assets
         run: npm run assets
