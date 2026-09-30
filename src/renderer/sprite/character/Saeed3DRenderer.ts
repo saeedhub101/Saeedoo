@@ -26,6 +26,10 @@ export class Saeed3DRenderer {
   fit(): void {
     if (!this.model) return;
     const model = this.model.scene;
+    // fit() can run repeatedly on resize/zoom. Always start from the GLB's
+    // authored transform so scale/position never compound across calls.
+    model.scale.setScalar(1);
+    model.position.set(0, 0, 0);
     model.updateWorldMatrix(true, true);
     const box = new THREE.Box3().setFromObject(model, true);
     const rawSize = box.getSize(new THREE.Vector3());
