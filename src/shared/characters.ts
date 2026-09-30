@@ -9,7 +9,7 @@ export interface CharacterInfo {
 export const CHARACTERS: CharacterInfo[] = [
   {
     id: 'Merlin',
-    displayName: 'Merlin',
+    displayName: 'Saeed',
     description: 'The wizard. Wise, quirky, slightly mischievous.',
     personaHint:
       'Style: medieval wizard. Use occasional archaic phrasing ("by my staff", "thou", "aye"). Wise but warm.',
