@@ -1,17 +1,17 @@
 {
-  "name": "merlin-the-wizard",
+  "name": "saeed",
   "version": "0.6.4",
-  "description": "Windows 11 desktop companion that recreates the Microsoft Agent Merlin sprite as a modern LLM-backed assistant. Multi-provider (Groq, OpenRouter, Ollama, MiniMax, Hermes Agent), voice in/out, screen capture, web search, custom characters.",
+  "description": "Saeed — a Windows desktop AI companion inspired by classic animated assistants, rebuilt with modern LLM, voice, brain, tools, and customizable characters.",
   "main": "out/main/index.js",
-  "author": "therealgorgan",
+  "author": "Saeed O. Almansour",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/therealgorgan/merlin-the-wizard.git"
+    "url": "https://github.com/saeedhub101/Saeedoo.git"
   },
-  "homepage": "https://github.com/therealgorgan/merlin-the-wizard#readme",
+  "homepage": "https://github.com/saeedhub101/Saeedoo#readme",
   "bugs": {
-    "url": "https://github.com/therealgorgan/merlin-the-wizard/issues"
+    "url": "https://github.com/saeedhub101/Saeedoo/issues"
   },
   "keywords": [
     "electron",
@@ -20,7 +20,6 @@
     "llm",
     "microsoft-agent",
     "clippy",
-    "merlin",
     "anthropic",
     "openai",
     "groq",
@@ -28,7 +27,10 @@
     "hermes-agent",
     "voice",
     "tts",
-    "whisper"
+    "whisper",
+    "saeed",
+    "desktop-assistant",
+    "ai-companion"
   ],
   "scripts": {
     "dev": "electron-vite dev",
@@ -46,7 +48,7 @@
     "test:all": "npm run test:unit && npm run verify:assets && npm run test:e2e",
     "dist": "npm run assets && node scripts/verify-assets.mjs && electron-vite build && node scripts/verify-assets.mjs --build && electron-builder && node scripts/verify-assets.mjs --package",
     "dist:portable": "npm run assets && node scripts/verify-assets.mjs && electron-vite build && node scripts/verify-assets.mjs --build && electron-builder --config.win.target=portable && node scripts/verify-assets.mjs --package",
-    "assets": "node scripts/prepare-merlin-assets.mjs",
+    "assets": "node scripts/prepare-saeed-assets.mjs",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
