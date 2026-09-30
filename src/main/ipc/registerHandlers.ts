@@ -228,7 +228,7 @@ export function registerIpcHandlers(): void {
   // setPosition throttling. Per-IPC moves at 60Hz freeze the sprite renderer's
   // paint pipeline (Chromium-on-Windows defers content paint while a window
   // is being moved). Accumulate deltas and flush at ~30Hz instead — halves
-  // the OS-level move events and gives clippyjs's setTimeout-driven frame
+  // the OS-level move events and gives the 3D renderer time to update during drag
   // cycling room to actually render MoveUp's frames during the drag.
   let pendingMoveDx = 0;
   let pendingMoveDy = 0;
