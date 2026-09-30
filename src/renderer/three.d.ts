@@ -9,6 +9,7 @@ declare module 'three' {
     y: number;
     z: number;
     constructor(x?: number, y?: number, z?: number);
+    set(x: number, y: number, z: number): this;
   }
 
   export class Object3D {
