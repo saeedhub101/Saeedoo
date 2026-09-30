@@ -63,12 +63,12 @@ html, body, #root {
   to { transform: scale(1); opacity: 1; }
 }
 
-/* --- Tail (points at Merlin) ------------------------------------------------
+/* --- Tail (points at Saeed) ------------------------------------------------
    Same protocol as the speech bubble: --tail-offset (0-1) slides the tail
-   along the chosen edge so it tracks Merlin even when he isn't aligned with
+   along the chosen edge so it tracks Saeed even when he isn't aligned with
    the panel's midpoint. data-tail picks which edge sticks out. */
 
-/* Default RIGHT: Merlin to our right (panel was placed to his left). */
+/* Default RIGHT: Saeed to our right (panel was placed to his left). */
 /* The tail is a CSS triangle. With border-left: 22px solid, the visible
    triangle's apex sits at the element origin and extends 22px LEFTWARD.
    right: -18 pushes the origin 18px past .app's right edge, so the triangle
@@ -98,7 +98,7 @@ html, body, #root {
   border-left: 18px solid #15151a;
 }
 
-/* LEFT: Merlin to our left (panel was placed to his right). */
+/* LEFT: Saeed to our left (panel was placed to his right). */
 body[data-tail='left'] .panel-tail {
   right: auto;
   left: -18px;
@@ -115,7 +115,7 @@ body[data-tail='left'] .panel-tail::after {
   border-right: 18px solid #15151a;
 }
 
-/* TOP: Merlin above us. */
+/* TOP: Saeed above us. */
 body[data-tail='top'] .panel-tail {
   right: auto;
   top: -18px;
@@ -137,7 +137,7 @@ body[data-tail='top'] .panel-tail::after {
   border-right: 9px solid transparent;
 }
 
-/* BOTTOM: Merlin below us. */
+/* BOTTOM: Saeed below us. */
 body[data-tail='bottom'] .panel-tail {
   right: auto;
   top: auto;
@@ -203,8 +203,8 @@ body[data-tail='bottom'] .panel-tail::after {
 }
 .titlebar .titlebar-btn:hover { background: rgba(255,255,255,0.05); color: #e8e8ec; }
 
-/* In modern mode the actual Merlin sprite lives in its own floating window
-   alongside this panel — the panel is just the chat surface. No clippyjs
+/* In modern mode the actual Saeed sprite lives in its own floating window
+   alongside this panel — the panel is just the chat surface. No 3D character renderer
    inside this renderer. The title bar shows a small static decoration in
    place of where the sprite used to be. */
 .titlebar-icon {
@@ -291,7 +291,7 @@ body[data-tail='bottom'] .panel-tail::after {
 }
 .thread .turn-content pre code { background: transparent; padding: 0; color: inherit; }
 .thread .turn-content a { color: #88aaee; }
-/* Idle thought — a passive nudge Merlin emits during long idle stretches.
+/* Idle thought — a passive nudge Saeed emits during long idle stretches.
    Rendered with a softer, ephemeral look + a visible countdown bar so the
    user knows it'll disappear if they ignore it. Click to engage. */
 .thread .turn.idle-thought {
