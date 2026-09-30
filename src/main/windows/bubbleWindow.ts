@@ -243,7 +243,7 @@ export function programmaticSetBubblePosition(x: number, y: number): void {
   programmatic(() => w.setPosition(nx, ny));
 }
 
-/** Compute the bubble's tail placement so it actually points at Merlin. The */
+/** Compute the bubble's tail placement so it actually points at Saeed. The */
 /** side (left/right/top/bottom) is the dominant axis from bubble center to */
 /** sprite center. The offset is a 0-1 fraction along that side, mapped from */
 /** the sprite's center position relative to the bubble's edge, so the tail */
@@ -268,7 +268,7 @@ function computeTailPlacement(): TailPlacement {
   let offset: number;
   if (Math.abs(dx) >= Math.abs(dy)) {
     side = dx >= 0 ? 'right' : 'left';
-    // Vertical offset along the bubble's side edge, tracking Merlin's center.
+    // Vertical offset along the bubble's side edge, tracking Saeed's center.
     offset = (scy - by0) / bh0;
   } else {
     side = dy >= 0 ? 'bottom' : 'top';
