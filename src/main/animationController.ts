@@ -9,7 +9,7 @@ import { logger } from './logger';
 // Central animation brain. Five jobs:
 //   1. Track Saeed's intent (sleeping/idle/reacting/thinking/speaking/doing/hidden).
 //   2. Route animation IPC to whichever surface hosts the sprite (classic
-//      sprite window vs modern panel's embedded clippyjs).
+//      standalone Saeed character window).
 //   3. Map high-level lifecycle events (user interaction, chat lifecycle, tool
 //      execution) to context-appropriate sprite animations.
 //   4. Pick animations *intelligently* — mood-weighted, with a recent-anim
@@ -107,7 +107,7 @@ function rememberAnim(name: AnimationName): void {
   while (recentAnims.length > RECENT_SIZE) recentAnims.shift();
 }
 
-// A Saeed animation in clippyjs takes roughly 1.5–3s to play. The renderer
+// Saeed animation requests are paced to avoid piling up while the renderer
 // queues anything we send, so if the controller fires more than 1 animation
 // per ~2.5s the queue piles up and the user sees gestures playing for many
 // seconds after the triggering event has long ended. To prevent that:
@@ -581,7 +581,7 @@ let dragAnimStarted = false;
 const DRAG_START_THRESHOLD_PX = 6;
 // MoveUp is the copter-hat-glides-upward animation — the cleanest "Saeed is
 // in transit" look across the four directional Move* sprites. We use it
-// regardless of drag direction because clippyjs's directional Move* sprites
+// regardless of drag direction because the character adapter owns directional Move* mapping
 // don't read well when the actual motion is driven by the user's hand: the
 // copter-hat alone signals "being carried" and the user's drag does the rest.
 const DRAG_ANIMATION: AnimationName = 'MoveUp';
@@ -651,7 +651,7 @@ export function reactToRightClick(): void {
 
 /** Start of a drag. Reset the throttle so the upcoming Move* fires without */
 /** being dropped. We do NOT send a stop IPC here — empirically, calling */
-/** clippyjs's agent.stop() immediately before agent.play() leaves it in a */
+/** Immediate stop/play transitions are isolated behind the character boundary. */
 /** state where the new animation doesn't render. Better to let the previous */
 /** animation finish naturally; the new Move* preempts via the */
 /** PREEMPTING_ANIMATIONS path or just queues briefly. */
@@ -773,7 +773,7 @@ export function chatEnd(): void {
   if (intent === 'hidden') return;
   // Crisp end: clear the renderer-side animation queue + interrupt the
   // currently-playing gesture so a long speaking/thinking anim doesn't
-  // overhang past the end of TTS audio. ClippyController.stop() handles
+  // overhang past the end of TTS audio. CharacterController.stop() handles
   // both via agent.stop + queue.clear, then sets up the natural idle
   // scheduler so Saeed doesn't freeze on a final frame.
   interruptCurrent();
