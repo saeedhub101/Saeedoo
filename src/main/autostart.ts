@@ -17,7 +17,7 @@ export async function setAutoStart(enabled: boolean): Promise<boolean> {
   try {
     app.setLoginItemSettings({
       openAtLogin: enabled,
-      // Open hidden (Merlin lives in the tray; no main window needs to pop up).
+      // Open hidden (Saeed lives in the tray; no main window needs to pop up).
       openAsHidden: false,
       args: ['--autostart'],
     });
