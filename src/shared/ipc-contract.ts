@@ -499,6 +499,13 @@ export interface SetupWizardApi {
 declare global {
   interface Window {
     spriteApi?: SpriteApi;
+    spriteEvents?: {
+      doubleClick: () => void;
+      rightClick: (x: number, y: number) => void;
+      drag: (dx: number, dy: number) => void;
+      dragEnd: () => void;
+      zoomBy: (delta: number) => void;
+    };
     bubbleApi?: BubbleApi;
     settingsApi?: SettingsApi;
     debugApi?: DebugApi;
