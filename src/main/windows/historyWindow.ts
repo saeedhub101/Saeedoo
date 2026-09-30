@@ -12,7 +12,7 @@ export function openHistoryWindow(): BrowserWindow {
   historyWindow = new BrowserWindow({
     width: 640,
     height: 720,
-    title: 'Merlin — Conversation History',
+    title: 'Saeed — Conversation History',
     autoHideMenuBar: true,
     backgroundColor: '#1a1a1f',
     show: false,
