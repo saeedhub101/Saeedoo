@@ -103,6 +103,10 @@ export async function read(): Promise<StoreData> {
     const txt = await fsp.readFile(file(), 'utf8');
     const data = JSON.parse(txt) as Partial<StoreData>;
     cache = { ...DEFAULTS, ...data };
+    // Migrate installations created before the 3D Saeed character replaced
+    // the legacy Merlin visual identity. Persona data remains usable, but the
+    // stored visual/character ID must never send the renderer back to Merlin.
+    if (cache.character === 'Merlin') cache.character = 'Saeed';
   } catch {
     cache = { ...DEFAULTS };
   }
