@@ -13,7 +13,7 @@ import {
  * Main-process character boundary.
  *
  * Brain, tools and voice talk to this controller instead of knowing whether
- * the visual implementation is Clippy, Three.js, or another renderer.
+ * the visual implementation is Three.js or another renderer.
  */
 const HIDE_ANIMATION_MS = 2200;
 const SHOW_ANIMATION_MS = 1500;
