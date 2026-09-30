@@ -304,7 +304,7 @@ function notifyTermsNeeded(): void {
   void setVoiceEngine('sapi');
   if (Notification.isSupported()) {
     new Notification({
-      title: 'Merlin: Switched to Windows voice',
+      title: 'Saeed: Switched to Windows voice',
       body:
         "Groq requires terms acceptance for the Orpheus voice model. " +
         "Switched to Windows SAPI (offline) for now. To use Groq, accept terms at the URL in the terminal.",
@@ -319,7 +319,7 @@ function notifyGenericFailure(status: number, body: string): void {
   warnedGeneric = true;
   if (Notification.isSupported()) {
     new Notification({
-      title: 'Merlin: Voice unavailable',
+      title: 'Saeed: Voice unavailable',
       body: `Groq TTS failed (HTTP ${status}). Falling back to Windows SAPI.`,
       silent: true,
     }).show();
@@ -346,8 +346,8 @@ async function synthesizeOpenRouter(text: string): Promise<ArrayBuffer | null> {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${key}`,
-        'HTTP-Referer': 'https://merlin.local',
-        'X-Title': 'Merlin the Wizard',
+        'HTTP-Referer': 'https://saeed.local',
+        'X-Title': 'Saeed AI',
       },
       body: JSON.stringify({
         model: OR_MODEL,
@@ -363,7 +363,7 @@ async function synthesizeOpenRouter(text: string): Promise<ArrayBuffer | null> {
       if (!warnedORGeneric && Notification.isSupported()) {
         warnedORGeneric = true;
         new Notification({
-          title: 'Merlin: OpenRouter voice failed',
+          title: 'Saeed: OpenRouter voice failed',
           body: `HTTP ${res.status}. Check your OpenRouter key and credit balance.`,
           silent: true,
         }).show();
