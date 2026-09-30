@@ -42,7 +42,7 @@ export type ExtensionGroup =
 // "none" is a common sentinel for "don't fire any animation".
 const NONE = { value: 'none', label: 'None (do nothing)' } as const;
 
-// Curated subset of clippyjs Merlin animations the user is likely to want as
+// Curated subset of clippyjs Saeed animations the user is likely to want as
 // drag start/end animations. Avoid the long *ing variants (Thinking 7.4s,
 // Reading 9.7s) — they'd overhang. Avoid Hide/Show — they affect visibility.
 const DRAG_START_ANIM_OPTIONS = [
@@ -79,7 +79,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     group: 'Drag',
     label: 'On drag start',
     description:
-      "Which animation Merlin plays the moment you start dragging him. " +
+      "Which animation Saeed plays the moment you start dragging him. " +
       "Default 'MoveUp' shows his magic halo. Pick 'None' to skip.",
     default: 'MoveUp',
     options: DRAG_START_ANIM_OPTIONS,
@@ -90,7 +90,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     group: 'Drag',
     label: 'On drag end',
     description:
-      "Which animation Merlin plays after you release him. 'Auto' picks " +
+      "Which animation Saeed plays after you release him. 'Auto' picks " +
       "a random calm idle gesture. 'None' leaves him still.",
     default: 'auto-idle',
     options: DRAG_END_ANIM_OPTIONS,
@@ -100,7 +100,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.drag.sway',
     group: 'Drag',
     label: 'Pendulum sway during drag',
-    description: 'Merlin tilts toward the direction of drag, settles back when still.',
+    description: 'Saeed tilts toward the direction of drag, settles back when still.',
     default: true,
   },
   {
@@ -116,7 +116,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.drag.shadow',
     group: 'Drag',
     label: 'Drop shadow during drag',
-    description: 'Stronger shadow under Merlin while he\'s being moved.',
+    description: 'Stronger shadow under Saeed while he\'s being moved.',
     default: true,
   },
 
@@ -126,7 +126,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.brain.wander',
     group: 'Brain',
     label: 'Autonomous wander',
-    description: 'Merlin drifts to a new spot occasionally when idle.',
+    description: 'Saeed drifts to a new spot occasionally when idle.',
     default: true,
   },
   {
@@ -143,7 +143,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.brain.eye_tracking',
     group: 'Brain',
     label: 'Eye-tracking (glance toward cursor)',
-    description: 'Merlin periodically looks toward your mouse cursor.',
+    description: 'Saeed periodically looks toward your mouse cursor.',
     default: true,
   },
   {
@@ -151,7 +151,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.brain.sleep_timer',
     group: 'Brain',
     label: 'Sleep timer (20-min idle → rest)',
-    description: 'After 20 minutes with no interaction, Merlin enters a resting pose.',
+    description: 'After 20 minutes with no interaction, Saeed enters a resting pose.',
     default: true,
   },
   {
@@ -159,7 +159,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.brain.app_focus_reaction',
     group: 'Brain',
     label: 'React to app focus (perk-up)',
-    description: 'Subtle fidget when the Merlin window gains focus.',
+    description: 'Subtle fidget when the Saeed window gains focus.',
     default: true,
   },
   {
@@ -177,7 +177,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.animation.speaking_cycle',
     group: 'Animation',
     label: 'Speaking gestures during voice',
-    description: 'Merlin gestures every few seconds while speaking aloud.',
+    description: 'Saeed gestures every few seconds while speaking aloud.',
     default: true,
   },
   {
@@ -193,7 +193,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.animation.energy_modulation',
     group: 'Animation',
     label: 'Energy + time-of-day modulation',
-    description: 'Animation density / palette tilts based on Merlin\'s simulated energy + time of day.',
+    description: 'Animation density / palette tilts based on Saeed\'s simulated energy + time of day.',
     default: true,
   },
   {
@@ -233,7 +233,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.animation.zoom_reaction',
     group: 'Animation',
     label: 'Surprised reaction on mouse-wheel zoom',
-    description: 'Plays Surprised when you scroll-wheel over Merlin.',
+    description: 'Plays Surprised when you scroll-wheel over Saeed.',
     default: true,
   },
 
@@ -243,7 +243,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.voice.welcome',
     group: 'Voice',
     label: 'Welcome greeting on startup',
-    description: 'Merlin greets you when the app launches.',
+    description: 'Saeed greets you when the app launches.',
     default: true,
     legacyStoreKey: 'showWelcomeOnStart',
   },
@@ -271,7 +271,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.visual.wiggle_on_nudge',
     group: 'Visual',
     label: 'Wiggle when emitting idle thoughts',
-    description: 'Small left-right shimmy when Merlin pops an idle thought.',
+    description: 'Small left-right shimmy when Saeed pops an idle thought.',
     default: true,
   },
   {
