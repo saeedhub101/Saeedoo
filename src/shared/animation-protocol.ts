@@ -2,7 +2,7 @@ import { type AnimationName, isAnimationName } from './animations';
 
 // Inline directives the LLM can emit, all of the form [kind:value]:
 //   [anim:Greet]                 — play an animation (must be a known name)
-//   [feel:cheerful]              — set Merlin's mood (must be a known mood)
+//   [feel:cheerful]              — set Saeed's mood (must be a known mood)
 //   [suggest:What time is it?]   — a clickable follow-up suggestion
 //
 // Values are loose strings; the parser surfaces them as typed chunks and the
