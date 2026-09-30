@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 
-// Canonical character set — MUST stay in sync with scripts/prepare-merlin-assets.mjs.
+// Canonical character set — MUST stay in sync with scripts/prepare-saeed-assets.mjs.
 const CHARACTERS = [
   'Merlin',
   'Clippy',
