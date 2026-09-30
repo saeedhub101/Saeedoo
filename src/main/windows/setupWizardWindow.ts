@@ -13,7 +13,7 @@ export function openSetupWizardWindow(): BrowserWindow {
   setupWizardWindow = new BrowserWindow({
     width: 680,
     height: 740,
-    title: 'Welcome to Merlin — First-Time Setup',
+    title: 'Welcome to Saeed — First-Time Setup',
     autoHideMenuBar: true,
     backgroundColor: '#1a1a1f',
     show: false,
