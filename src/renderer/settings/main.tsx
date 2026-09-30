@@ -609,7 +609,7 @@ function App(): React.ReactElement {
     return (
       <div className="app">
         <header>
-          <h1>Merlin — Settings</h1>
+          <h1>Saeed — Settings</h1>
         </header>
         <main>
           <p>Loading…</p>
@@ -623,7 +623,7 @@ function App(): React.ReactElement {
   return (
     <div className="app">
       <header>
-        <h1>Merlin — Settings</h1>
+        <h1>Saeed — Settings</h1>
         <div className="subtitle">
           Pick a category on the left. Changes save automatically; keys are
           encrypted on this machine and never leave it.
@@ -649,10 +649,10 @@ function App(): React.ReactElement {
         <section>
           <h2>Chat (Conversational LLM)</h2>
           <div className="status">
-            The model that answers when you <strong>chat with Merlin</strong> —
+            The model that answers when you <strong>chat with Saeed</strong> —
             streams text, calls tools, drives his replies. Cloud or local. This
             is <em>separate</em> from the <a href="#brain">Brain LLM</a> below
-            (which decides what Merlin does autonomously when you&apos;re not
+            (which decides what Saeed does autonomously when you&apos;re not
             chatting).
           </div>
           {providers.map((p) => (
@@ -721,14 +721,14 @@ function App(): React.ReactElement {
               id="username"
               type="text"
               value={settings.userName ?? ''}
-              placeholder="(Merlin will use your Windows username)"
+              placeholder="(Saeed will use your Windows username)"
               onChange={(e) =>
                 void update({ userName: e.target.value.trim() || null })
               }
             />
           </div>
           <div className="status">
-            What Merlin calls you in conversation. Leave blank to use your
+            What Saeed calls you in conversation. Leave blank to use your
             Windows account name.
           </div>
           <div className="row">
@@ -1029,7 +1029,7 @@ function App(): React.ReactElement {
           <div className="status">
             <strong>Classic</strong> preserves the chunky pixelated MS Agent look.
             <strong> Retouched</strong> lets the browser smooth-upscale the same
-            sprites and applies a subtle contrast/shadow filter so Merlin reads
+            sprites and applies a subtle contrast/shadow filter so Saeed reads
             more like a "rendered" character on modern high-DPI screens. Takes
             effect immediately.
           </div>
@@ -1040,7 +1040,7 @@ function App(): React.ReactElement {
         <section id="extensions">
           <h2>Behaviors (Extensions)</h2>
           <div className="status">
-            Toggle individual Merlin behaviors. Defaults match the experience you
+            Toggle individual Saeed behaviors. Defaults match the experience you
             get with everything on. Changes apply immediately — no restart needed.
           </div>
           {Array.from(
@@ -1122,7 +1122,7 @@ function App(): React.ReactElement {
           <h2>Brain (Autonomous LLM)</h2>
           <div className="status">
             <strong>Independent of the Chat LLM at the top of this window.</strong>{' '}
-            The Brain is what decides what Merlin does <em>while you&apos;re NOT
+            The Brain is what decides what Saeed does <em>while you&apos;re NOT
             chatting</em> — idle thoughts, wandering, gestures. Fires once every
             ~5 minutes. The <strong>Default</strong> controller uses no LLM at
             all (just a timer); <strong>Local LLM</strong> uses an Ollama model
@@ -1148,7 +1148,7 @@ function App(): React.ReactElement {
             </select>
             <div className="status ext-desc">
               Switching takes effect immediately. If you pick local-llm or
-              hermes without running the wizard, Merlin will silently fall back
+              hermes without running the wizard, Saeed will silently fall back
               to no-op on each tick until you finish configuring it.
             </div>
           </div>
@@ -1177,7 +1177,7 @@ function App(): React.ReactElement {
         <section>
           <h2>Hotkeys</h2>
           <div className="row">
-            <label htmlFor="summon-hotkey">Summon Merlin</label>
+            <label htmlFor="summon-hotkey">Summon Saeed</label>
             <input
               id="summon-hotkey"
               type="text"
@@ -1253,7 +1253,7 @@ function App(): React.ReactElement {
             )}
           </div>
           <div className="status">
-            With a Tavily key, Merlin can search the live web for current info.
+            With a Tavily key, Saeed can search the live web for current info.
             Without one, he falls back to DuckDuckGo Instant Answers (limited).{' '}
             <button className="help" onClick={() => api.openExternal('https://tavily.com/')}>
               Get a free Tavily key →
@@ -1297,27 +1297,27 @@ function App(): React.ReactElement {
           </div>
           <h3 className="extensions-group-title" style={{ marginTop: 20 }}>About</h3>
           <div className="status">
-            <strong>Merlin the Wizard</strong> — a Windows 11 desktop companion
-            that recreates the Microsoft Agent Merlin sprite as a modern
+            <strong>Saeed the Wizard</strong> — a Windows 11 desktop companion
+            that recreates the Microsoft Agent Saeed sprite as a modern
             LLM-backed assistant. Multi-provider chat, voice, screen capture,
             custom characters, and an autonomous brain.
           </div>
           <div className="row" style={{ marginTop: 8 }}>
             <button
               className="secondary"
-              onClick={() => void api.openExternal('https://github.com/therealgorgan/merlin-the-wizard')}
+              onClick={() => void api.openExternal('https://github.com/therealgorgan/saeed-the-wizard')}
             >
               GitHub repo →
             </button>
             <button
               className="secondary"
-              onClick={() => void api.openExternal('https://github.com/therealgorgan/merlin-the-wizard/issues')}
+              onClick={() => void api.openExternal('https://github.com/therealgorgan/saeed-the-wizard/issues')}
             >
               Report an issue →
             </button>
             <button
               className="secondary"
-              onClick={() => void api.openExternal('https://github.com/therealgorgan/merlin-the-wizard/blob/main/CHANGELOG.md')}
+              onClick={() => void api.openExternal('https://github.com/therealgorgan/saeed-the-wizard/blob/main/CHANGELOG.md')}
             >
               Changelog →
             </button>
