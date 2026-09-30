@@ -19,7 +19,7 @@ const LOCAL_BASE = '../agents/';
 
 let controller: ClippyController | null = null;
 let currentAgent: { hide?: (fast?: boolean) => void } | null = null;
-let currentCharacter = 'Merlin';
+let currentCharacter = 'Saeed';
 
 async function loadClippy(): Promise<ClippyModule> {
   const mod = await import('clippyjs');
@@ -28,7 +28,7 @@ async function loadClippy(): Promise<ClippyModule> {
 }
 
 function applyZoom(zoom: number): void {
-  document.documentElement.style.setProperty('--merlin-zoom', String(zoom));
+  document.documentElement.style.setProperty('--saeed-zoom', String(zoom));
 }
 
 function applyAppearance(appearance: 'classic' | 'retouched'): void {
@@ -54,14 +54,14 @@ function applyExtensions(flags: Record<string, boolean | string>): void {
 
 let mediaMuted = false;
 // Auto-mute flag — set true while TTS audio is queued/playing so animation
-// sounds (clippyjs sound-bank effects baked into each Merlin animation)
+// sounds (clippyjs sound-bank effects baked into each Saeed animation)
 // don't compete with the spoken response. Updated by the voice playback
 // loop further down in this file.
 let voicePlaybackActive = false;
 const origMediaPlay = HTMLMediaElement.prototype.play;
-type MaybeVoice = HTMLMediaElement & { __merlinVoice?: boolean };
+type MaybeVoice = HTMLMediaElement & { __saeedVoice?: boolean };
 HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
-  const isVoice = (this as MaybeVoice).__merlinVoice === true;
+  const isVoice = (this as MaybeVoice).__saeedVoice === true;
   // Voice always plays. Non-voice (animation SFX) is gated by both the
   // user's mute setting AND the in-flight-voice auto-mute.
   // The auto-mute-during-TTS gate honors a feature flag set via body data
@@ -78,7 +78,7 @@ HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
  *  starts (so any animation SFX already mid-play gets silenced immediately). */
 function silenceNonVoiceAudio(): void {
   document.querySelectorAll('audio').forEach((a) => {
-    if ((a as MaybeVoice).__merlinVoice) return;
+    if ((a as MaybeVoice).__saeedVoice) return;
     try {
       a.pause();
       a.currentTime = 0;
@@ -104,30 +104,30 @@ declare global {
   interface Window {
     spriteEvents?: SpriteEventsApi;
     /** True once a clippyjs agent has successfully mounted. The E2E smoke test
-     *  polls this to assert Merlin actually appeared on a fresh install. */
-    __merlinAgentReady?: boolean;
+     *  polls this to assert Saeed actually appeared on a fresh install. */
+    __saeedAgentReady?: boolean;
     /** Set to the error string if the sprite failed to load (asset missing,
      *  clippyjs import failure). Lets the smoke test fail loudly instead of
      *  hanging, and powers the visible fallback banner. */
-    __merlinAgentError?: string;
+    __saeedAgentError?: string;
     /** The clippyjs id of the currently-mounted character. */
-    __merlinCharacter?: string;
+    __saeedCharacter?: string;
   }
 }
 
-/** The original "Merlin not appearing after install" bug was invisible: if the
+/** The original "Saeed not appearing after install" bug was invisible: if the
  *  sprite assets were missing from the package, clippyjs.load called onFail and
  *  we silently resolved, leaving a transparent empty window. This renders a
  *  visible banner instead so the failure is obvious to the user AND so the E2E
  *  smoke test can detect it. */
 function showLoadFailure(reason: string): void {
-  window.__merlinAgentError = reason;
-  window.__merlinAgentReady = false;
-  if (document.getElementById('merlin-load-error')) return;
+  window.__saeedAgentError = reason;
+  window.__saeedAgentReady = false;
+  if (document.getElementById('saeed-load-error')) return;
   const el = document.createElement('div');
-  el.id = 'merlin-load-error';
+  el.id = 'saeed-load-error';
   el.setAttribute('role', 'alert');
-  el.textContent = '⚠ Merlin could not load. Try reinstalling.';
+  el.textContent = '⚠ Saeed could not load. Try reinstalling.';
   el.style.cssText = [
     'position:fixed',
     'inset:0',
@@ -143,7 +143,7 @@ function showLoadFailure(reason: string): void {
     '-webkit-app-region:drag',
   ].join(';');
   document.body.appendChild(el);
-  console.error('[merlin-sprite] load failure surfaced to user:', reason);
+  console.error('[saeed-sprite] load failure surfaced to user:', reason);
 }
 
 const DRAG_THRESHOLD_PX = 3;
@@ -154,9 +154,9 @@ let pendingDragDx = 0;
 let pendingDragDy = 0;
 let dragLoopRunning = false;
 
-// Smoothed horizontal velocity → CSS --merlin-drag-tilt (pendulum sway).
+// Smoothed horizontal velocity → CSS --saeed-drag-tilt (pendulum sway).
 // Pure CSS-var update so it's compositor-friendly. Decays back to 0 when the
-// user holds the mouse still mid-drag so Merlin settles upright.
+// user holds the mouse still mid-drag so Saeed settles upright.
 let smoothedDx = 0;
 const SWAY_SMOOTH_ALPHA = 0.35;
 const SWAY_DECAY_PER_FRAME = 0.86;
@@ -168,7 +168,7 @@ function applySway(): void {
     -SWAY_MAX_TILT_DEG,
     Math.min(SWAY_MAX_TILT_DEG, smoothedDx * SWAY_X_TILT_FACTOR),
   );
-  document.documentElement.style.setProperty('--merlin-drag-tilt', `${tilt.toFixed(2)}deg`);
+  document.documentElement.style.setProperty('--saeed-drag-tilt', `${tilt.toFixed(2)}deg`);
 }
 
 function dragLoop(): void {
@@ -197,7 +197,7 @@ function startDragLoop(): void {
 function stopDragLoop(): void {
   dragLoopRunning = false;
   smoothedDx = 0;
-  document.documentElement.style.removeProperty('--merlin-drag-tilt');
+  document.documentElement.style.removeProperty('--saeed-drag-tilt');
 }
 
 function flushPendingDrag(): void {
@@ -222,7 +222,7 @@ function wireMouseEvents(): void {
     const dy = e.screenY - active.lastY;
     if (!active.moved && Math.hypot(dx, dy) >= DRAG_THRESHOLD_PX) {
       active.moved = true;
-      document.body.classList.add('merlin-dragging');
+      document.body.classList.add('saeed-dragging');
       startDragLoop();
     }
     if (active.moved && (dx || dy)) {
@@ -237,7 +237,7 @@ function wireMouseEvents(): void {
     const wasMoved = active.moved;
     (e.target as Element).releasePointerCapture?.(active.pointerId);
     active = null;
-    document.body.classList.remove('merlin-dragging');
+    document.body.classList.remove('saeed-dragging');
     // Flush any pending coalesced delta so the final position is exact.
     flushPendingDrag();
     stopDragLoop();
@@ -297,15 +297,15 @@ async function mountCharacter(clippy: ClippyModule, name: string): Promise<void>
         currentAgent = a;
         controller = new ClippyController(a);
         // Mark ready + clear any prior error/banner now that a sprite exists.
-        window.__merlinAgentReady = true;
-        delete window.__merlinAgentError;
-        window.__merlinCharacter = name;
-        document.getElementById('merlin-load-error')?.remove();
-        console.log('[merlin-sprite] loaded character:', name);
+        window.__saeedAgentReady = true;
+        delete window.__saeedAgentError;
+        window.__saeedCharacter = name;
+        document.getElementById('saeed-load-error')?.remove();
+        console.log('[saeed-sprite] loaded character:', name);
         resolve();
       },
       (err) => {
-        console.error('[merlin-sprite] failed to load', name, err);
+        console.error('[saeed-sprite] failed to load', name, err);
         showLoadFailure(`character "${name}" failed to load: ${String(err)}`);
         resolve();
       },
@@ -319,29 +319,29 @@ void (async () => {
   try {
     clippy = await loadClippy();
   } catch (err) {
-    console.error('[merlin-sprite] failed to import clippyjs', err);
+    console.error('[saeed-sprite] failed to import clippyjs', err);
     showLoadFailure(`clippyjs import failed: ${String(err)}`);
     return;
   }
   const api = window.spriteApi;
   if (!api) {
-    console.warn('[merlin-sprite] spriteApi not exposed by preload');
+    console.warn('[saeed-sprite] spriteApi not exposed by preload');
     showLoadFailure('preload bridge (spriteApi) missing');
     return;
   }
 
   // Pull initial state from main now that we exist. This avoids the race where
   // main pushed initial settings before our handlers were wired.
-  let initialCharacter = 'Merlin';
+  let initialCharacter = 'Saeed';
   try {
     const initial = await api.getInitial();
     applyZoom(initial.zoom);
     applyMute(initial.muteSounds);
     applyAppearance(initial.appearance || 'classic');
     if (initial.extensions) applyExtensions(initial.extensions);
-    initialCharacter = initial.character || 'Merlin';
+    initialCharacter = initial.character || 'Saeed';
   } catch (err) {
-    console.warn('[merlin-sprite] getInitial failed, using defaults', err);
+    console.warn('[saeed-sprite] getInitial failed, using defaults', err);
   }
   await mountCharacter(clippy, initialCharacter);
 
@@ -401,7 +401,7 @@ void (async () => {
       playNextVoice();
     });
     voicePlaying.addEventListener('error', () => {
-      console.warn('[merlin-voice] audio element error event');
+      console.warn('[saeed-voice] audio element error event');
       voicePlaying = null;
       playNextVoice();
     });
@@ -409,7 +409,7 @@ void (async () => {
       .call(voicePlaying)
       .then(() => {
         console.log(
-          '[merlin-voice] play() resolved. paused=',
+          '[saeed-voice] play() resolved. paused=',
           voicePlaying?.paused,
           'muted=',
           voicePlaying?.muted,
@@ -418,14 +418,14 @@ void (async () => {
         );
       })
       .catch((err: Error) => {
-        console.warn('[merlin-voice] play() rejected:', err?.name, err?.message);
+        console.warn('[saeed-voice] play() rejected:', err?.name, err?.message);
       });
     reportAudioState();
   }
   api.onPlayAudio((dataUrl: string) => {
-    console.log('[merlin-voice] received audio data URL,', dataUrl.length, 'chars');
+    console.log('[saeed-voice] received audio data URL,', dataUrl.length, 'chars');
     const audio = new Audio(dataUrl);
-    (audio as MaybeVoice).__merlinVoice = true;
+    (audio as MaybeVoice).__saeedVoice = true;
     audio.volume = 1.0;
     audio.muted = false;
     voiceQueue.push(audio);
