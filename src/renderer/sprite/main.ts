@@ -1,449 +1,349 @@
-import jquery from 'jquery';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import type { AnimationName } from '@shared/animations';
-import { ClippyController } from './ClippyController';
 
-// clippyjs is UMD code that expects a global `jQuery` and `$`.
-(window as unknown as { jQuery: typeof jquery; $: typeof jquery }).jQuery = jquery;
-(window as unknown as { $: typeof jquery }).$ = jquery;
-
-interface ClippyModule {
-  load: (
-    name: string,
-    onSuccess: (agent: unknown) => void,
-    onFail?: (err: unknown) => void,
-    basePath?: string,
-  ) => void;
-}
-
-const LOCAL_BASE = '../agents/';
-
-let controller: ClippyController | null = null;
-let currentAgent: { hide?: (fast?: boolean) => void } | null = null;
-let currentCharacter = 'Saeed';
-
-async function loadClippy(): Promise<ClippyModule> {
-  const mod = await import('clippyjs');
-  const m = mod as unknown as ClippyModule & { default?: ClippyModule };
-  return m.default ?? m;
-}
-
-function applyZoom(zoom: number): void {
-  document.documentElement.style.setProperty('--saeed-zoom', String(zoom));
-}
-
-function applyAppearance(appearance: 'classic' | 'retouched'): void {
-  document.body.dataset.appearance = appearance;
-}
-
-/** Apply feature-flag snapshot to body data attributes. CSS uses these to
- *  gate purely-visual effects like sway/scale/shadow during drag. Boolean
- *  flags map to data-flag-<short-key>="true"/"false". String/select flags
- *  are exposed too for future CSS hooks. */
-function applyExtensions(flags: Record<string, boolean | string>): void {
-  const set = (shortKey: string, value: boolean | string): void => {
-    document.body.dataset[`flag${shortKey}`] = String(value);
-  };
-  // Drag visuals — these are the renderer-side gates that matter today.
-  if ('behavior.drag.sway' in flags) set('DragSway', flags['behavior.drag.sway']!);
-  if ('behavior.drag.scale' in flags) set('DragScale', flags['behavior.drag.scale']!);
-  if ('behavior.drag.shadow' in flags) set('DragShadow', flags['behavior.drag.shadow']!);
-  if ('behavior.voice.auto_mute_sfx_during_tts' in flags) {
-    set('AutoMuteSfx', flags['behavior.voice.auto_mute_sfx_during_tts']!);
-  }
-}
-
-let mediaMuted = false;
-// Auto-mute flag — set true while TTS audio is queued/playing so animation
-// sounds (clippyjs sound-bank effects baked into each Saeed animation)
-// don't compete with the spoken response. Updated by the voice playback
-// loop further down in this file.
-let voicePlaybackActive = false;
-const origMediaPlay = HTMLMediaElement.prototype.play;
-type MaybeVoice = HTMLMediaElement & { __saeedVoice?: boolean };
-HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
-  const isVoice = (this as MaybeVoice).__saeedVoice === true;
-  // Voice always plays. Non-voice (animation SFX) is gated by both the
-  // user's mute setting AND the in-flight-voice auto-mute.
-  // The auto-mute-during-TTS gate honors a feature flag set via body data
-  // attribute. When the flag is "false", SFX play normally even during voice.
-  const autoMuteOff = document.body.dataset.flagAutoMuteSfx === 'false';
-  if (!isVoice && (mediaMuted || (voicePlaybackActive && !autoMuteOff))) {
-    return Promise.resolve();
-  }
-  return origMediaPlay.call(this);
+type SpriteApi = Window['spriteApi'];
+type LoadedCharacter = {
+  scene: THREE.Group;
+  mixer: THREE.AnimationMixer;
+  clips: THREE.AnimationClip[];
 };
 
-/** Pause + reset all <audio> elements except the currently-playing voice
- *  chunk. Used both when the user mutes via settings and when TTS voice
- *  starts (so any animation SFX already mid-play gets silenced immediately). */
-function silenceNonVoiceAudio(): void {
-  document.querySelectorAll('audio').forEach((a) => {
-    if ((a as MaybeVoice).__saeedVoice) return;
-    try {
-      a.pause();
-      a.currentTime = 0;
-    } catch {
-      /* ignore */
+const canvas = document.getElementById('character-canvas') as HTMLCanvasElement;
+const loadingEl = document.getElementById('character-loading') as HTMLDivElement;
+const errorEl = document.getElementById('character-error') as HTMLDivElement;
+
+const api: SpriteApi | undefined = window.spriteApi;
+
+let renderer: THREE.WebGLRenderer;
+let camera: THREE.PerspectiveCamera;
+let scene: THREE.Scene;
+let character: LoadedCharacter | null = null;
+let activeAction: THREE.AnimationAction | null = null;
+let idleAction: THREE.AnimationAction | null = null;
+let renderHandle = 0;
+let lastFrame = 0;
+let renderFps = 30;
+let currentZoom = 1;
+
+function showError(message: string): void {
+  loadingEl.hidden = true;
+  errorEl.hidden = false;
+  errorEl.textContent = 'Saeed 3D failed to load. ' + message;
+  console.error('[saeed-3d]', message);
+}
+
+function setupRenderer(): void {
+  renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: false,
+    powerPreference: 'high-performance',
+    preserveDrawingBuffer: false,
+  });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+  renderer.setClearColor(0x000000, 0);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+}
+
+function setupScene(): void {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(30, 1, 0.05, 100);
+  camera.position.set(0, 1.9, 7);
+  camera.lookAt(0, 1.9, 0);
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x334455, 1.8));
+  const key = new THREE.DirectionalLight(0xffffff, 2.2);
+  key.position.set(2, 4, 3);
+  scene.add(key);
+}
+
+function resize(): void {
+  if (!renderer || !camera) return;
+  const width = Math.max(1, canvas.clientWidth);
+  const height = Math.max(1, canvas.clientHeight);
+  renderer.setSize(width, height, false);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  if (character) fitCharacter(character.scene);
+  renderNow();
+}
+
+function fitCharacter(model: THREE.Object3D): void {
+  model.updateWorldMatrix(true, true);
+  const box = new THREE.Box3().setFromObject(model, true);
+  const rawSize = box.getSize(new THREE.Vector3());
+  const targetHeight = 3.75;
+  const scale = targetHeight / Math.max(rawSize.y, 0.001);
+  model.scale.setScalar(scale);
+  model.updateWorldMatrix(true, true);
+
+  const fitted = new THREE.Box3().setFromObject(model, true);
+  const center = fitted.getCenter(new THREE.Vector3());
+  model.position.x -= center.x;
+  model.position.z -= center.z;
+  model.position.y -= fitted.min.y;
+  model.updateWorldMatrix(true, true);
+
+  const finalBox = new THREE.Box3().setFromObject(model, true);
+  const size = finalBox.getSize(new THREE.Vector3());
+  const finalCenter = finalBox.getCenter(new THREE.Vector3());
+  const verticalFov = THREE.MathUtils.degToRad(camera.fov * 0.5);
+  const horizontalFov = 2 * Math.atan(Math.tan(verticalFov) * camera.aspect);
+  const verticalDistance = (size.y * 0.5) / Math.max(Math.tan(verticalFov), 0.001);
+  const horizontalDistance = (size.x * 0.5) / Math.max(Math.tan(horizontalFov * 0.5), 0.001);
+  const distance = Math.max(verticalDistance, horizontalDistance) * 1.04 + size.z * 0.5;
+
+  camera.position.set(0, finalCenter.y, Math.max(distance, 2.5));
+  camera.lookAt(0, finalCenter.y + size.y * 0.02, 0);
+}
+
+function clipByBaseName(clips: THREE.AnimationClip[], name: string): THREE.AnimationClip | null {
+  const exact = clips.find((c) => c.name === name);
+  if (exact) return exact;
+  return clips.find((c) => c.name.toLowerCase().endsWith('|' + name.toLowerCase())) ?? null;
+}
+
+function resolveClip(name: AnimationName): THREE.AnimationClip | null {
+  if (!character) return null;
+  const clips = character.clips;
+  if (name.startsWith('Move')) return clipByBaseName(clips, 'Walk') ?? clipByBaseName(clips, 'Run');
+  if (name === 'Greet' || name === 'Wave' || name === 'GetAttention') return clipByBaseName(clips, 'Wave');
+  if (name === 'Hide' || name === 'Show') return clipByBaseName(clips, 'Idle');
+  return clipByBaseName(clips, 'Idle');
+}
+
+function playClip(name: AnimationName, loop = false): void {
+  if (!character) return;
+  const clip = resolveClip(name);
+  if (!clip) return;
+
+  const action = character.mixer.clipAction(clip);
+  if (activeAction === action && action.isRunning()) return;
+
+  if (activeAction && activeAction !== action) {
+    activeAction.fadeOut(0.16);
+  }
+  action.reset();
+  action.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, loop ? Infinity : 1);
+  action.clampWhenFinished = !loop;
+  action.fadeIn(0.16).play();
+  activeAction = action;
+  renderFps = loop ? 30 : 60;
+  ensureRenderLoop();
+}
+
+function startIdle(): void {
+  if (!character) return;
+  const clip = clipByBaseName(character.clips, 'Idle') ?? character.clips[0];
+  if (!clip) return;
+  idleAction = character.mixer.clipAction(clip);
+  idleAction.reset().setLoop(THREE.LoopRepeat, Infinity).fadeIn(0.2).play();
+  activeAction = idleAction;
+  renderFps = 30;
+  ensureRenderLoop();
+}
+
+function renderNow(): void {
+  if (renderer && scene && camera) renderer.render(scene, camera);
+}
+
+function ensureRenderLoop(): void {
+  if (renderHandle) return;
+  renderHandle = requestAnimationFrame(frame);
+}
+
+function frame(now: number): void {
+  renderHandle = 0;
+  const interval = 1000 / renderFps;
+  if (now - lastFrame < interval) {
+    ensureRenderLoop();
+    return;
+  }
+  const delta = Math.min((now - (lastFrame || now)) / 1000, 0.1);
+  lastFrame = now;
+
+  if (character) {
+    character.mixer.update(delta);
+    renderNow();
+  }
+
+  if (activeAction && !activeAction.isRunning() && activeAction !== idleAction) {
+    if (idleAction) {
+      idleAction.reset().fadeIn(0.18).play();
+      activeAction = idleAction;
+      renderFps = 30;
     }
+  }
+
+  if (activeAction?.isRunning() || activeAction === idleAction) {
+    ensureRenderLoop();
+  }
+}
+
+function setZoom(zoom: number): void {
+  currentZoom = Math.max(0.5, Math.min(4, Number(zoom) || 1));
+  document.documentElement.style.setProperty('--saeed-zoom', String(currentZoom));
+  resize();
+}
+
+async function loadCharacter(): Promise<void> {
+  loadingEl.hidden = false;
+  errorEl.hidden = true;
+
+  const loader = new GLTFLoader();
+  const url = new URL('../characters/Saeed.glb', window.location.href).href;
+  const gltf = await loader.loadAsync(url);
+
+  const root = gltf.scene;
+  root.rotation.y = Math.PI;
+  scene.add(root);
+
+  character = {
+    scene: root,
+    mixer: new THREE.AnimationMixer(root),
+    clips: gltf.animations,
+  };
+
+  fitCharacter(root);
+  startIdle();
+  renderNow();
+
+  loadingEl.hidden = true;
+  console.info('[saeed-3d] loaded', {
+    animations: gltf.animations.map((clip) => clip.name),
+    meshes: root.children.length,
   });
 }
 
-function applyMute(muted: boolean): void {
-  mediaMuted = muted;
-  if (muted) silenceNonVoiceAudio();
-}
+function wirePointerEvents(): void {
+  let active: { x: number; y: number; id: number; moved: boolean } | null = null;
 
-interface SpriteEventsApi {
-  doubleClick(): void;
-  rightClick(x: number, y: number): void;
-  drag(dx: number, dy: number): void;
-  dragEnd(): void;
-  zoomBy(delta: number): void;
-}
-declare global {
-  interface Window {
-    spriteEvents?: SpriteEventsApi;
-    /** True once a clippyjs agent has successfully mounted. The E2E smoke test
-     *  polls this to assert Saeed actually appeared on a fresh install. */
-    __saeedAgentReady?: boolean;
-    /** Set to the error string if the sprite failed to load (asset missing,
-     *  clippyjs import failure). Lets the smoke test fail loudly instead of
-     *  hanging, and powers the visible fallback banner. */
-    __saeedAgentError?: string;
-    /** The clippyjs id of the currently-mounted character. */
-    __saeedCharacter?: string;
-  }
-}
-
-/** The original "Saeed not appearing after install" bug was invisible: if the
- *  sprite assets were missing from the package, clippyjs.load called onFail and
- *  we silently resolved, leaving a transparent empty window. This renders a
- *  visible banner instead so the failure is obvious to the user AND so the E2E
- *  smoke test can detect it. */
-function showLoadFailure(reason: string): void {
-  window.__saeedAgentError = reason;
-  window.__saeedAgentReady = false;
-  if (document.getElementById('saeed-load-error')) return;
-  const el = document.createElement('div');
-  el.id = 'saeed-load-error';
-  el.setAttribute('role', 'alert');
-  el.textContent = '⚠ Saeed could not load. Try reinstalling.';
-  el.style.cssText = [
-    'position:fixed',
-    'inset:0',
-    'display:flex',
-    'align-items:center',
-    'justify-content:center',
-    'text-align:center',
-    'padding:8px',
-    'font:600 12px system-ui,sans-serif',
-    'color:#fff',
-    'background:rgba(150,20,20,0.92)',
-    'border-radius:10px',
-    '-webkit-app-region:drag',
-  ].join(';');
-  document.body.appendChild(el);
-  console.error('[saeed-sprite] load failure surfaced to user:', reason);
-}
-
-const DRAG_THRESHOLD_PX = 3;
-// Coalesce pointermove deltas into rAF-batched IPC sends. Per-frame setPosition
-// in main blocks the renderer's paint pipeline; batching at 60Hz gives clippyjs
-// breathing room to actually render its sprite-frame animation during the drag.
-let pendingDragDx = 0;
-let pendingDragDy = 0;
-let dragLoopRunning = false;
-
-// Smoothed horizontal velocity → CSS --saeed-drag-tilt (pendulum sway).
-// Pure CSS-var update so it's compositor-friendly. Decays back to 0 when the
-// user holds the mouse still mid-drag so Saeed settles upright.
-let smoothedDx = 0;
-const SWAY_SMOOTH_ALPHA = 0.35;
-const SWAY_DECAY_PER_FRAME = 0.86;
-const SWAY_X_TILT_FACTOR = -0.55;
-const SWAY_MAX_TILT_DEG = 14;
-
-function applySway(): void {
-  const tilt = Math.max(
-    -SWAY_MAX_TILT_DEG,
-    Math.min(SWAY_MAX_TILT_DEG, smoothedDx * SWAY_X_TILT_FACTOR),
-  );
-  document.documentElement.style.setProperty('--saeed-drag-tilt', `${tilt.toFixed(2)}deg`);
-}
-
-function dragLoop(): void {
-  if (!dragLoopRunning) return;
-  if (pendingDragDx !== 0 || pendingDragDy !== 0) {
-    const dx = pendingDragDx;
-    const dy = pendingDragDy;
-    pendingDragDx = 0;
-    pendingDragDy = 0;
-    smoothedDx = smoothedDx * (1 - SWAY_SMOOTH_ALPHA) + dx * SWAY_SMOOTH_ALPHA;
-    window.spriteEvents?.drag(dx, dy);
-  } else {
-    smoothedDx *= SWAY_DECAY_PER_FRAME;
-    if (Math.abs(smoothedDx) < 0.05) smoothedDx = 0;
-  }
-  applySway();
-  requestAnimationFrame(dragLoop);
-}
-
-function startDragLoop(): void {
-  if (dragLoopRunning) return;
-  dragLoopRunning = true;
-  requestAnimationFrame(dragLoop);
-}
-
-function stopDragLoop(): void {
-  dragLoopRunning = false;
-  smoothedDx = 0;
-  document.documentElement.style.removeProperty('--saeed-drag-tilt');
-}
-
-function flushPendingDrag(): void {
-  if (pendingDragDx === 0 && pendingDragDy === 0) return;
-  const dx = pendingDragDx;
-  const dy = pendingDragDy;
-  pendingDragDx = 0;
-  pendingDragDy = 0;
-  window.spriteEvents?.drag(dx, dy);
-}
-
-function wireMouseEvents(): void {
-  let active: { lastX: number; lastY: number; pointerId: number; moved: boolean } | null = null;
   document.addEventListener('pointerdown', (e) => {
     if (e.button !== 0) return;
-    active = { lastX: e.screenX, lastY: e.screenY, pointerId: e.pointerId, moved: false };
+    active = { x: e.screenX, y: e.screenY, id: e.pointerId, moved: false };
     (e.target as Element).setPointerCapture?.(e.pointerId);
   });
+
   document.addEventListener('pointermove', (e) => {
-    if (!active || e.pointerId !== active.pointerId) return;
-    const dx = e.screenX - active.lastX;
-    const dy = e.screenY - active.lastY;
-    if (!active.moved && Math.hypot(dx, dy) >= DRAG_THRESHOLD_PX) {
+    if (!active || e.pointerId !== active.id) return;
+    const dx = e.screenX - active.x;
+    const dy = e.screenY - active.y;
+    if (!active.moved && Math.hypot(dx, dy) >= 3) {
       active.moved = true;
       document.body.classList.add('saeed-dragging');
-      startDragLoop();
     }
     if (active.moved && (dx || dy)) {
-      active.lastX = e.screenX;
-      active.lastY = e.screenY;
-      pendingDragDx += dx;
-      pendingDragDy += dy;
+      active.x = e.screenX;
+      active.y = e.screenY;
+      api?.startDrag?.();
+      window.spriteEvents?.drag(dx, dy);
     }
   });
-  function endDrag(e: PointerEvent): void {
-    if (!active || e.pointerId !== active.pointerId) return;
-    const wasMoved = active.moved;
-    (e.target as Element).releasePointerCapture?.(active.pointerId);
+
+  const end = (e: PointerEvent): void => {
+    if (!active || e.pointerId !== active.id) return;
+    const moved = active.moved;
+    (e.target as Element).releasePointerCapture?.(active.id);
     active = null;
     document.body.classList.remove('saeed-dragging');
-    // Flush any pending coalesced delta so the final position is exact.
-    flushPendingDrag();
-    stopDragLoop();
-    // Tell main the drag explicitly ended — main otherwise infers end from
-    // "no drag deltas for 220ms" which incorrectly fires when the user holds
-    // the mouse button without moving. Only fire if we actually dragged
-    // (not for a quick click that didn't cross the drag threshold).
-    if (wasMoved) window.spriteEvents?.dragEnd();
-  }
-  document.addEventListener('pointerup', endDrag);
-  document.addEventListener('pointercancel', endDrag);
+    if (moved) window.spriteEvents?.dragEnd();
+  };
+
+  document.addEventListener('pointerup', end);
+  document.addEventListener('pointercancel', end);
+
   document.addEventListener('dblclick', (e) => {
     e.preventDefault();
     window.spriteEvents?.doubleClick();
+    playClip('Wave', false);
   });
+
   document.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     window.spriteEvents?.rightClick(e.screenX, e.screenY);
   });
 
-  let lastWheelAt = 0;
-  const WHEEL_COOLDOWN_MS = 60;
-  document.addEventListener(
-    'wheel',
-    (e) => {
-      e.preventDefault();
-      const now = performance.now();
-      if (now - lastWheelAt < WHEEL_COOLDOWN_MS) return;
-      lastWheelAt = now;
-      const delta = e.deltaY < 0 ? 0.1 : -0.1;
-      window.spriteEvents?.zoomBy(delta);
-    },
-    { passive: false },
-  );
+  document.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.1 : -0.1;
+    setZoom(currentZoom + delta);
+    window.spriteEvents?.zoomBy(delta);
+  }, { passive: false });
 }
 
-async function mountCharacter(clippy: ClippyModule, name: string): Promise<void> {
-  // Tear down existing agent so we don't pile up DOM nodes / audio.
-  if (currentAgent) {
-    try {
-      currentAgent.hide?.(true);
-    } catch {
-      /* ignore */
-    }
-    document.querySelectorAll('body > .clippy, body > .clippy-balloon').forEach((el) => el.remove());
-    currentAgent = null;
-    controller?.stop();
-    controller = null;
-  }
-  currentCharacter = name;
-  return new Promise<void>((resolve) => {
-    clippy.load(
-      name,
-      (agent) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const a = agent as any;
-        currentAgent = a;
-        controller = new ClippyController(a);
-        // Mark ready + clear any prior error/banner now that a sprite exists.
-        window.__saeedAgentReady = true;
-        delete window.__saeedAgentError;
-        window.__saeedCharacter = name;
-        document.getElementById('saeed-load-error')?.remove();
-        console.log('[saeed-sprite] loaded character:', name);
-        resolve();
-      },
-      (err) => {
-        console.error('[saeed-sprite] failed to load', name, err);
-        showLoadFailure(`character "${name}" failed to load: ${String(err)}`);
-        resolve();
-      },
-      LOCAL_BASE,
-    );
-  });
-}
-
-void (async () => {
-  let clippy: ClippyModule;
-  try {
-    clippy = await loadClippy();
-  } catch (err) {
-    console.error('[saeed-sprite] failed to import clippyjs', err);
-    showLoadFailure(`clippyjs import failed: ${String(err)}`);
-    return;
-  }
-  const api = window.spriteApi;
+function wireApi(): void {
   if (!api) {
-    console.warn('[saeed-sprite] spriteApi not exposed by preload');
-    showLoadFailure('preload bridge (spriteApi) missing');
+    showError('preload bridge missing');
     return;
   }
 
-  // Pull initial state from main now that we exist. This avoids the race where
-  // main pushed initial settings before our handlers were wired.
-  let initialCharacter = 'Saeed';
-  try {
-    const initial = await api.getInitial();
-    applyZoom(initial.zoom);
-    applyMute(initial.muteSounds);
-    applyAppearance(initial.appearance || 'classic');
-    if (initial.extensions) applyExtensions(initial.extensions);
-    initialCharacter = initial.character || 'Saeed';
-  } catch (err) {
-    console.warn('[saeed-sprite] getInitial failed, using defaults', err);
-  }
-  await mountCharacter(clippy, initialCharacter);
-
-  api.onPlay((name: AnimationName) => controller?.enqueue(name));
-  api.onStop(() => controller?.stop());
+  api.onPlay((name: AnimationName) => {
+    playClip(name, name.startsWith('Idle'));
+  });
+  api.onStop(() => {
+    character?.mixer.stopAllAction();
+    if (idleAction) idleAction.reset().play();
+    activeAction = idleAction;
+    ensureRenderLoop();
+  });
   api.onShow(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (currentAgent as any)?.show?.(false);
+    if (character) { playClip('Show', false); renderNow(); }
   });
-  api.onHide(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (currentAgent as any)?.hide?.(false);
+  api.onHide(() => playClip('Hide', false));
+  api.onSetZoom(setZoom);
+  api.onSetCharacter(() => {
+    // The 3D build has one authoritative Saeed model. Character/persona
+    // selection remains available to the brain but never swaps the 3D asset.
+    console.info('[saeed-3d] character selection ignored for visual asset');
   });
-  api.onSetZoom(applyZoom);
-  api.onSetMuteSounds(applyMute);
-  api.onSetCharacter((id: string) => {
-    if (id === currentCharacter) return;
-    void mountCharacter(clippy, id);
-  });
-  api.onSetAppearance(applyAppearance);
-  api.onSetExtensions(applyExtensions);
+  api.onSetAppearance(() => {});
+  api.onSetExtensions(() => {});
 
-  // TTS voice playback queue.
   const voiceQueue: HTMLAudioElement[] = [];
   let voicePlaying: HTMLAudioElement | null = null;
-  // Last reported active state — only fire IPC on transitions to keep the
-  // channel quiet during stable periods.
-  let lastReportedActive = false;
-  function reportAudioState(): void {
-    if (!api) return;
-    const active = voicePlaying !== null || voiceQueue.length > 0;
-    // Mirror the active flag into the module-scope mute gate. Done on every
-    // call (not just transitions) so the gate is always in sync, even if a
-    // transition IPC was skipped for any reason.
-    voicePlaybackActive = active;
-    if (active === lastReportedActive) return;
-    lastReportedActive = active;
-    // When voice goes from idle → active, silence any animation SFX that's
-    // already mid-play so the spoken response isn't drowned out.
-    if (active) silenceNonVoiceAudio();
-    api.reportAudioState(active);
-  }
-  function playNextVoice(): void {
+
+  const playNextVoice = (): void => {
     if (voicePlaying || voiceQueue.length === 0) {
-      // Queue went to fully idle (no playing, no queued). Tell main so the
-      // 'speaking' state can wind down to 'idle' once it's safe.
-      if (!voicePlaying && voiceQueue.length === 0) reportAudioState();
+      if (!voicePlaying && voiceQueue.length === 0) void api.reportAudioState(false);
       return;
     }
     voicePlaying = voiceQueue.shift() ?? null;
-    if (!voicePlaying) {
-      reportAudioState();
-      return;
-    }
-    voicePlaying.addEventListener('ended', () => {
-      voicePlaying = null;
-      playNextVoice();
-    });
-    voicePlaying.addEventListener('error', () => {
-      console.warn('[saeed-voice] audio element error event');
-      voicePlaying = null;
-      playNextVoice();
-    });
-    origMediaPlay
-      .call(voicePlaying)
-      .then(() => {
-        console.log(
-          '[saeed-voice] play() resolved. paused=',
-          voicePlaying?.paused,
-          'muted=',
-          voicePlaying?.muted,
-          'vol=',
-          voicePlaying?.volume,
-        );
-      })
-      .catch((err: Error) => {
-        console.warn('[saeed-voice] play() rejected:', err?.name, err?.message);
-      });
-    reportAudioState();
-  }
+    if (!voicePlaying) return;
+    voicePlaying.onended = () => { voicePlaying = null; playNextVoice(); };
+    voicePlaying.onerror = () => { voicePlaying = null; playNextVoice(); };
+    void voicePlaying.play().catch((err) => console.warn('[saeed-voice] play failed', err));
+    void api.reportAudioState(true);
+  };
+
   api.onPlayAudio((dataUrl: string) => {
-    console.log('[saeed-voice] received audio data URL,', dataUrl.length, 'chars');
     const audio = new Audio(dataUrl);
-    (audio as MaybeVoice).__saeedVoice = true;
-    audio.volume = 1.0;
-    audio.muted = false;
+    audio.volume = 1;
     voiceQueue.push(audio);
-    reportAudioState();
+    playClip('Explain', true);
     playNextVoice();
   });
+
   api.onStopAudio(() => {
     voiceQueue.length = 0;
-    if (voicePlaying) {
-      try {
-        voicePlaying.pause();
-      } catch {
-        /* ignore */
-      }
-      voicePlaying = null;
-    }
-    reportAudioState();
+    voicePlaying?.pause();
+    voicePlaying = null;
+    void api.reportAudioState(false);
+    if (idleAction) { idleAction.reset().play(); activeAction = idleAction; }
   });
+}
 
-  wireMouseEvents();
-})();
+window.addEventListener('resize', resize);
+wirePointerEvents();
+wireApi();
+
+try {
+  setupRenderer();
+  setupScene();
+  resize();
+  void loadCharacter().catch((err) => showError(String(err?.message ?? err)));
+} catch (err) {
+  showError(String(err instanceof Error ? err.message : err));
+}

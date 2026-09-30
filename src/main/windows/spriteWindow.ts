@@ -6,9 +6,10 @@ import { IPC } from '@shared/ipc-contract';
 import { getBubbleWindow, programmaticSetBubblePosition } from './bubbleWindow';
 import { getChatPanelWindow, programmaticSetPanelPosition } from './chatPanelWindow';
 
-// Native sprite framesize in clippyjs Saeed pack is 128x128.
-const BASE_SPRITE_PX = 128;
-const WINDOW_PAD_PX = 32;
+// 3D character window. The renderer fits the GLB to this viewport automatically.
+const BASE_CHARACTER_W = 360;
+const BASE_CHARACTER_H = 420;
+const WINDOW_PAD_PX = 0;
 
 export const ZOOM_PRESETS = [1.0, 1.5, 2.0, 3.0] as const;
 export const ZOOM_MIN = 0.5;
@@ -46,8 +47,7 @@ export function setOnSpriteSmoothMoveDone(cb: (() => void) | null): void {
 }
 
 function windowSize(zoom: number): { w: number; h: number } {
-  const px = Math.round(BASE_SPRITE_PX * zoom) + WINDOW_PAD_PX * 2;
-  return { w: px, h: px };
+  return { w: Math.round(BASE_CHARACTER_W * zoom) + WINDOW_PAD_PX * 2, h: Math.round(BASE_CHARACTER_H * zoom) + WINDOW_PAD_PX * 2 };
 }
 
 export function clampZoom(z: number): number {
@@ -125,7 +125,7 @@ export async function createSpriteWindow(): Promise<BrowserWindow> {
     spriteWindow?.show();
     // Initial state is pulled by the renderer via getInitial once its IPC
     // handlers are wired — avoids races where we push before listeners exist.
-    logger.info('Sprite window shown', { x, y, w, h, zoom });
+    logger.info('3D character window shown', { x, y, w, h, zoom });
   });
 
   spriteWindow.on('closed', () => {

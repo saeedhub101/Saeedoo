@@ -2,15 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; media-src 'self' data:; font-src 'self';"
-    />
-    <title>Saeed Sprite</title>
-    <link rel="stylesheet" href="./style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saeed 3D Character</title>
   </head>
   <body>
-    <div id="saeed-host"></div>
+    <canvas id="character-canvas" aria-label="Saeed 3D character"></canvas>
+    <div id="character-loading" role="status">Loading Saeed…</div>
+    <div id="character-error" role="alert" hidden></div>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>
