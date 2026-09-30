@@ -6,7 +6,7 @@ import { IPC } from '@shared/ipc-contract';
 import { getBubbleWindow, programmaticSetBubblePosition } from './bubbleWindow';
 import { getChatPanelWindow, programmaticSetPanelPosition } from './chatPanelWindow';
 
-// Native sprite framesize in clippyjs Merlin pack is 128x128.
+// Native sprite framesize in clippyjs Saeed pack is 128x128.
 const BASE_SPRITE_PX = 128;
 const WINDOW_PAD_PX = 32;
 
@@ -101,7 +101,7 @@ export async function createSpriteWindow(): Promise<BrowserWindow> {
   (spriteWindow.webContents as any).on(
     'console-message',
     (_e: unknown, _level: number, message: string) => {
-      if (typeof message === 'string' && message.includes('[merlin-')) {
+      if (typeof message === 'string' && message.includes('[saeed-')) {
         logger.info('[sprite-console]', message);
       }
     },
@@ -213,7 +213,7 @@ function easeOutCubic(t: number): number {
 
 /** Smoothly animate the sprite window from current pos to (targetX, targetY). */
 /** If the bubble is visible, it moves in lockstep by the same delta so it */
-/** stays attached to Merlin throughout the animation. */
+/** stays attached to Saeed throughout the animation. */
 export async function smoothMoveSpriteTo(
   targetX: number,
   targetY: number,
@@ -241,7 +241,7 @@ export async function smoothMoveSpriteTo(
   // renders. Threshold of 40px excludes wiggleSprite (14px ticks) but
   // catches brain wander (up to ~94px) and move_relative small (100px).
   // Note: autonomous moves use direct mapping (drag inverts because the user
-  // is yanking him; autonomous moves are Merlin gliding under his own power).
+  // is yanking him; autonomous moves are Saeed gliding under his own power).
   const moveDist = Math.hypot(targetX - startX, targetY - startY);
   if (moveDist > 40) {
     const dxAuto = targetX - startX;
@@ -360,7 +360,7 @@ export function cornerCoords(
 
 /** Compute a target position for a relative move in a given direction. */
 /** "small" = ~100px, "medium" = ~250px, "large" = ~500px. Clamped to the */
-/** sprite's current display work-area so Merlin never lands off-screen. */
+/** sprite's current display work-area so Saeed never lands off-screen. */
 export function relativeCoords(
   direction: 'left' | 'right' | 'up' | 'down',
   amount: 'small' | 'medium' | 'large' = 'medium',
@@ -391,7 +391,7 @@ const HIDE_ANIM_MS = 2200;
 const SHOW_ANIM_MS = 1500;
 
 /** Play the Hide animation, then actually hide the window. */
-export async function hideMerlinWithAnimation(): Promise<void> {
+export async function hideSaeedWithAnimation(): Promise<void> {
   const w = getSpriteWindow();
   if (!w || !w.isVisible()) return;
   w.webContents.send(IPC.spritePlay, 'Hide');
@@ -413,7 +413,7 @@ export async function wiggleSprite(): Promise<void> {
 }
 
 /** Show the window, then play the Show animation. */
-export async function showMerlinWithAnimation(): Promise<void> {
+export async function showSaeedWithAnimation(): Promise<void> {
   const w = getSpriteWindow();
   if (!w) return;
   if (!w.isVisible()) w.show();
@@ -430,7 +430,7 @@ export async function setZoom(rawZoom: number): Promise<number> {
   if (!w) return zoom;
 
   const { w: nw, h: nh } = windowSize(zoom);
-  // Resize around the window's current center so Merlin stays roughly put.
+  // Resize around the window's current center so Saeed stays roughly put.
   const [cx, cy] = w.getPosition();
   const [cw, ch] = w.getSize();
   const dx = Math.round(((cw ?? nw) - nw) / 2);
@@ -506,7 +506,7 @@ export async function setCharacter(id: string): Promise<string> {
 }
 
 export async function getCharacterId(): Promise<string> {
-  return (await read()).character || 'Merlin';
+  return (await read()).character || 'Saeed';
 }
 
 export async function getZoom(): Promise<number> {
