@@ -8,7 +8,7 @@ export interface CharacterInfo {
 
 export const CHARACTERS: CharacterInfo[] = [
   {
-    id: 'Merlin',
+    id: 'Saeed',
     displayName: 'Saeed',
     description: 'The wizard. Wise, quirky, slightly mischievous.',
     personaHint:
