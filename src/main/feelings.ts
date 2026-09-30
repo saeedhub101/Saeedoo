@@ -54,7 +54,7 @@ export function setOnMoodChange(cb: (m: Mood) => void): () => void {
   };
 }
 
-// What Merlin should consider when answering. Surfaced into the system prompt.
+// What Saeed should consider when answering. Surfaced into the system prompt.
 export const MOOD_DESCRIPTIONS: Record<Mood, string> = {
   cheerful: 'You feel bright and warm — answers come easily, with a slight smile.',
   curious: 'You feel intrigued — eager to ask follow-up questions and explore tangents.',
