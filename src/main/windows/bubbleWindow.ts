@@ -247,7 +247,7 @@ export function programmaticSetBubblePosition(x: number, y: number): void {
 /** side (left/right/top/bottom) is the dominant axis from bubble center to */
 /** sprite center. The offset is a 0-1 fraction along that side, mapped from */
 /** the sprite's center position relative to the bubble's edge, so the tail */
-/** slides along to track Merlin even when he isn't aligned with the bubble. */
+/** slides along to track Saeed even when he isn't aligned with the bubble. */
 function computeTailPlacement(): TailPlacement {
   const w = bubbleWindow;
   const sprite = getSpriteWindow();
