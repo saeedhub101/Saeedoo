@@ -8,7 +8,8 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
-const GLB_REL = 'renderer/public/characters/Saeed.glb';
+const SOURCE_GLB_REL = 'renderer/public/characters/Saeed.glb';
+const BUILT_GLB_REL = 'renderer/characters/Saeed.glb';
 const MIN_BYTES = 1024;
 const REQUIRED_ANIMATIONS = ['Idle', 'Walk', 'Run', 'Wave'];
 
@@ -69,11 +70,11 @@ async function readGlb(path, label) {
 }
 
 async function verifySource() {
-  await readGlb(join(ROOT, 'src', GLB_REL), 'source');
+  await readGlb(join(ROOT, 'src', SOURCE_GLB_REL), 'source');
 }
 
 async function verifyBuild() {
-  await readGlb(join(ROOT, 'out', GLB_REL), 'build');
+  await readGlb(join(ROOT, 'out', BUILT_GLB_REL), 'build');
 }
 
 async function verifyPackage() {
@@ -87,7 +88,7 @@ async function verifyPackage() {
   if (stat.size < MIN_BYTES) throw new Error(`package: app.asar is unexpectedly small: ${stat.size} bytes`);
 
   const asar = (await import('@electron/asar')).default ?? (await import('@electron/asar'));
-  const inner = join('out', GLB_REL).replaceAll('\\', '/');
+  const inner = join('out', BUILT_GLB_REL).replaceAll('\\', '/');
   const buf = asar.extractFile(asarPath, inner);
   if (!buf || buf.length < MIN_BYTES) throw new Error(`package: ${inner} missing or too small`);
   const animations = parseGlb(buf, 'package');
