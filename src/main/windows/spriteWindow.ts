@@ -493,15 +493,11 @@ export async function getVoiceEngine(): Promise<VoiceEngineName> {
 
 export async function setCharacter(id: string): Promise<string> {
   await write({ character: id });
-  // Resolve custom personas (which reuse a built-in sprite pack) to their
-  // baseCharacter clippyjs ID before sending to the sprite renderer.
-  const { resolveSpriteId } = await import('../customCharacters');
-  const spriteId = resolveSpriteId(id);
-  // Broadcast to whichever surface is hosting the sprite right now.
-  const { getActiveSpriteHost } = await import('../activeSurface');
-  const w = await getActiveSpriteHost();
-  w?.webContents.send(IPC.spriteSetCharacter, spriteId);
-  logger.info('character:', id, spriteId !== id ? `(sprite: ${spriteId})` : '');
+  // Persona selection is separate from the visual asset. The visual renderer
+  // is permanently backed by Saeed.glb, so changing a persona never swaps the
+  // 3D model or reaches into the renderer implementation.
+  logger.info('character persona:', id, 'visual: Saeed.glb');
+  getSpriteWindow()?.webContents.send(IPC.spriteSetCharacter, 'Saeed');
   return id;
 }
 
