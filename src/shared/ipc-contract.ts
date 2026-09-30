@@ -220,7 +220,7 @@ export interface StoreSnapshot {
   hermesEndpoint: string;
   voiceEngine: string;
   voiceName: string;
-  /** Mute clippyjs sound effects (the animation SFX baked into the original
+  /** Mute character animation sound effects. The 3D renderer may ignore this when
    *  Microsoft Agent .acs files). Also controllable from the tray. */
   muteSounds: boolean;
   character: string;
