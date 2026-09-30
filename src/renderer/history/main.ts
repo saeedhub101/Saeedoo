@@ -38,7 +38,7 @@ function render(): void {
     p.className = 'empty';
     p.textContent = q
       ? `No messages match "${q}".`
-      : 'No conversation yet. Ask Merlin something!';
+      : 'No conversation yet. Ask Saeed something!';
     messagesEl.appendChild(p);
     countEl.textContent = '';
     return;
@@ -51,7 +51,7 @@ function render(): void {
     div.className = `turn ${turn.role}`;
     const header = document.createElement('div');
     header.className = 'turn-header';
-    header.textContent = `${turn.role === 'user' ? 'You' : 'Merlin'} · ${fmtTime(turn.timestamp)}`;
+    header.textContent = `${turn.role === 'user' ? 'You' : 'Saeed'} · ${fmtTime(turn.timestamp)}`;
     const body = document.createElement('div');
     body.className = 'turn-content';
     body.textContent = turn.content;
