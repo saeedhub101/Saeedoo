@@ -13,7 +13,7 @@ export function openBrainWizardWindow(): BrowserWindow {
   brainWizardWindow = new BrowserWindow({
     width: 640,
     height: 720,
-    title: 'Merlin — Brain Setup Wizard',
+    title: 'Saeed — Brain Setup Wizard',
     autoHideMenuBar: true,
     backgroundColor: '#1a1a1f',
     show: false,
