@@ -15,7 +15,7 @@ export const IPC = {
   spriteStopAudio: 'sprite:stopAudio',
   /** Renderer → main: reports whether the audio queue + currently-playing
    *  audio are still active. Lets main keep the 'speaking' state (and its
-   *  gesture cycle) alive until the user actually stops hearing Merlin. */
+   *  gesture cycle) alive until the user actually stops hearing Saeed. */
   spriteAudioStateChanged: 'sprite:audioStateChanged',
   spriteSetCharacter: 'sprite:setCharacter',
   spriteSetAppearance: 'sprite:setAppearance',
@@ -171,7 +171,7 @@ export type BubbleMode = 'read' | 'ask';
 export type TailSide = 'left' | 'right' | 'top' | 'bottom';
 /** Offset along the chosen side as a 0-1 fraction. For 'left'/'right' it's */
 /** vertical (0=top of bubble, 1=bottom). For 'top'/'bottom' it's horizontal */
-/** (0=left of bubble, 1=right). Lets the tail actually point at Merlin when */
+/** (0=left of bubble, 1=right). Lets the tail actually point at Saeed when */
 /** he isn't aligned with the bubble's midpoint. */
 export interface TailPlacement {
   side: TailSide;
@@ -255,7 +255,7 @@ export interface PanelChatTurn {
   streaming?: boolean;
 }
 
-/** A passive "thought" Merlin emits when the user has been idle for a while. */
+/** A passive "thought" Saeed emits when the user has been idle for a while. */
 /** Renders inline in the chat thread with a visible countdown — auto-removes */
 /** itself when the timer expires (or earlier if the user dismisses it or */
 /** sends a message that supersedes it). */
@@ -283,7 +283,7 @@ export interface PanelApi {
   onFinalizeAssistant: (cb: (text: string) => void) => () => void;
   onSetSuggestions: (cb: (sug: string[]) => void) => () => void;
   /** Tail-side updates (mirrors bubble) — panel renders a tail that points */
-  /** at the floating sprite window so the chat reads as "attached" to Merlin. */
+  /** at the floating sprite window so the chat reads as "attached" to Saeed. */
   onSetTailSide: (cb: (placement: TailPlacement) => void) => () => void;
   /** Push a new idle thought into the thread. The panel renders it with a */
   /** visible countdown and auto-removes when the TTL expires. */
