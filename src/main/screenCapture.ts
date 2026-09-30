@@ -74,8 +74,8 @@ export async function captureCurrentScreen(): Promise<PendingScreenshot | null> 
 
     try {
       const n = new Notification({
-        title: 'Merlin',
-        body: `Screen captured — ask Merlin about it. (${w}×${h})`,
+        title: 'Saeed',
+        body: `Screen captured — ask Saeed about it. (${w}×${h})`,
         silent: true,
       });
       n.show();
