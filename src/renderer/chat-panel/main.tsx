@@ -5,7 +5,7 @@ import type { PanelChatTurn, PanelIdleThought } from '@shared/ipc-contract';
 
 // The chat panel is JUST a chat surface in this design — the actual sprite
 // lives in its own floating window (the standalone sprite window) alongside
-// the panel. No clippyjs in this renderer; no voice playback either (TTS
+// the panel. No embedded character renderer in this panel; no voice playback either (TTS
 // audio routes to the sprite window directly via the active-surface logic
 // in main).
 
