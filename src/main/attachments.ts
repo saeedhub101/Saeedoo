@@ -2,7 +2,7 @@ import { promises as fsp } from 'node:fs';
 import { basename, extname } from 'node:path';
 import { logger } from './logger';
 
-// Pending attachments queue — files the user has dropped onto Merlin since
+// Pending attachments queue — files the user has dropped onto Saeed since
 // their last submitted prompt. handleUserMessage drains this and prepends
 // the file contents to the user's text.
 
