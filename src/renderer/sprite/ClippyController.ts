@@ -59,7 +59,7 @@ export class ClippyController {
   enqueue(name: AnimationName): void {
     if (!isAnimationName(name)) return;
     if (!this.available.has(name)) {
-      console.warn(`[ClippyController] Animation "${name}" unavailable in clippyjs Merlin pack`);
+      console.warn(`[ClippyController] Animation "${name}" unavailable in the legacy 2D character pack`);
       return;
     }
     this.cancelIdle();
