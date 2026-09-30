@@ -162,7 +162,7 @@ api?.onSetSuggestions((items) => {
 api?.onSetTailSide((placement) => {
   // placement is { side, offset } — side picks the CSS rules for which edge
   // of the bubble the tail sticks out of; offset (0-1) slides it along that
-  // edge so the tail points at Merlin's actual position. Expose as a CSS
+  // edge so the tail points at Saeed's actual position. Expose as a CSS
   // variable so the .balloon-tail rules can read it without re-rendering.
   document.body.dataset.tail = placement.side;
   document.body.style.setProperty('--tail-offset', String(placement.offset));
