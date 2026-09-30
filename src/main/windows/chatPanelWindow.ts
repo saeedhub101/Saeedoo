@@ -148,12 +148,12 @@ export function focusPanelInput(): void {
   w.webContents.send(IPC.panelOpenForAsk);
 }
 
-/** Legacy compatibility hook; animations now belong to the standalone Saeed window. */
+/** Compatibility hook: route character animation through the main character boundary. */
 export function panelPlayAnimation(name: AnimationName): void {
   panelWindow?.webContents.send(IPC.spritePlay, name);
 }
 
-/** Send audio data URL to the panel's embedded audio player. */
+/** Compatibility hook retained for callers; audio is owned by the standalone Saeed window. */
 export function panelPlayAudio(dataUrl: string): void {
   panelWindow?.webContents.send(IPC.spritePlayAudio, dataUrl);
 }
