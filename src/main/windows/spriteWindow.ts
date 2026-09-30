@@ -96,7 +96,7 @@ export async function createSpriteWindow(): Promise<BrowserWindow> {
   spriteWindow.setVisibleOnAllWorkspaces(true);
 
   // Forward renderer console to the main terminal so we can debug audio /
-  // clippyjs issues without opening DevTools on the transparent window.
+  // 3D character renderer issues without opening DevTools on the transparent window.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (spriteWindow.webContents as any).on(
     'console-message',
