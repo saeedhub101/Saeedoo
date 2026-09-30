@@ -279,7 +279,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.visual.smooth_drag_paint',
     group: 'Visual',
     label: 'Smooth-drag (throttle window moves)',
-    description: 'Coalesces window-move events to 30Hz so clippyjs frame animation can render during drag. Disable for one-to-one cursor tracking.',
+    description: 'Coalesces window-move events to 30Hz during drag to keep the 3D renderer responsive. Disable for one-to-one cursor tracking.',
     default: true,
   },
 
