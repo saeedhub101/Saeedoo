@@ -123,7 +123,7 @@ export const saeedTools = {
       "'leave me alone'. The user can bring you back from the tray menu.",
     parameters: z.object({}).strict(),
     execute: async () => {
-      await characterController.play('Hide'); characterController.hide();
+      await characterController.hide();
       return { ok: true };
     },
   }),
@@ -133,7 +133,7 @@ export const saeedTools = {
       "Make Saeed reappear after being hidden. Rarely needed since you're usually visible.",
     parameters: z.object({}).strict(),
     execute: async () => {
-      characterController.show(); await characterController.play('Show');
+      await characterController.show();
       return { ok: true };
     },
   }),
