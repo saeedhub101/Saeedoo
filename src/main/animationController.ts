@@ -3,8 +3,8 @@ import { IPC } from '@shared/ipc-contract';
 import { IDLE_ANIMATIONS, isAnimationName, type AnimationName } from '@shared/animations';
 import {
   getSpriteWindow,
-  hideMerlinWithAnimation,
-  showMerlinWithAnimation,
+  hideSaeedWithAnimation,
+  showSaeedWithAnimation,
   wiggleSprite,
 } from './windows/spriteWindow';
 import { getActiveSpriteHost } from './activeSurface';
@@ -13,7 +13,7 @@ import { getValue, isEnabled } from './extensions';
 import { logger } from './logger';
 
 // Central animation brain. Five jobs:
-//   1. Track Merlin's intent (sleeping/idle/reacting/thinking/speaking/doing/hidden).
+//   1. Track Saeed's intent (sleeping/idle/reacting/thinking/speaking/doing/hidden).
 //   2. Route animation IPC to whichever surface hosts the sprite (classic
 //      sprite window vs modern panel's embedded clippyjs).
 //   3. Map high-level lifecycle events (user interaction, chat lifecycle, tool
@@ -30,7 +30,7 @@ let intent: Intent = 'idle';
 
 // ── Time of day + energy ────────────────────────────────────────────────────
 //
-// Energy is a 0–100 internal counter that captures "how peppy is Merlin right
+// Energy is a 0–100 internal counter that captures "how peppy is Saeed right
 // now." It governs animation density (sparser when low), animation selection
 // (calmer when low), and reaction probability (skip more reactions when low).
 //
@@ -39,7 +39,7 @@ let intent: Intent = 'idle';
 // upward after a long sleep.
 //
 // Time-of-day is consulted alongside mood when biasing animation picks — at
-// night even a cheerful Merlin tilts toward calmer gestures.
+// night even a cheerful Saeed tilts toward calmer gestures.
 
 export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
 
@@ -54,7 +54,7 @@ function timeOfDay(d: Date = new Date()): TimeOfDay {
 let energy = 70; // 0-100, starts moderate
 let lastEnergyUpdate = Date.now();
 let sleepStartedAt = 0;
-// Floor so Merlin never goes fully drained — at very low energy he'd look
+// Floor so Saeed never goes fully drained — at very low energy he'd look
 // catatonic, picking only the sleepy palette indefinitely. 20 is "tired but
 // still responsive."
 const ENERGY_MIN = 20;
@@ -65,13 +65,13 @@ function decayEnergy(): void {
   lastEnergyUpdate = now;
   if (minutes <= 0) return;
   // Base decay: 0.5 energy per minute idle. Slower than before so a few
-  // hours away from the keyboard doesn't leave Merlin at zero next time
+  // hours away from the keyboard doesn't leave Saeed at zero next time
   // the user comes back.
   let drain = minutes * 0.5;
   // Late night (22:00–6:00) drains 1.4x faster (was 2x — too aggressive).
   const tod = timeOfDay();
   if (tod === 'night') drain *= 1.4;
-  // While actually sleeping, restore (Merlin "rests up").
+  // While actually sleeping, restore (Saeed "rests up").
   if (intent === 'sleeping' && sleepStartedAt > 0) {
     const sleptMinutes = (now - sleepStartedAt) / 60_000;
     if (sleptMinutes > 5) {
@@ -87,7 +87,7 @@ function gainEnergy(amount: number): void {
   energy = Math.min(100, energy + amount);
 }
 
-/** 0–1 multiplier for "how energetic is Merlin right now." */
+/** 0–1 multiplier for "how energetic is Saeed right now." */
 function energyFactor(): number {
   decayEnergy();
   return Math.max(0.1, energy / 100);
@@ -113,7 +113,7 @@ function rememberAnim(name: AnimationName): void {
   while (recentAnims.length > RECENT_SIZE) recentAnims.shift();
 }
 
-// A Merlin animation in clippyjs takes roughly 1.5–3s to play. The renderer
+// A Saeed animation in clippyjs takes roughly 1.5–3s to play. The renderer
 // queues anything we send, so if the controller fires more than 1 animation
 // per ~2.5s the queue piles up and the user sees gestures playing for many
 // seconds after the triggering event has long ended. To prevent that:
@@ -123,7 +123,7 @@ function rememberAnim(name: AnimationName): void {
 //   - Sends that represent a real state transition or user-facing immediate
 //     reaction pass {important: true} to bypass the throttle.
 //
-// This keeps Merlin's animation density manageable without hand-tuning every
+// This keeps Saeed's animation density manageable without hand-tuning every
 // trigger's frequency.
 
 const ANIM_TYPICAL_MS = 2500;
@@ -135,7 +135,7 @@ function send(name: AnimationName, opts: SendOpts = {}): void {
   if (!isAnimationName(name)) return;
   const now = Date.now();
   if (!opts.important && now - lastSendAt < ANIM_TYPICAL_MS) {
-    // Drop — Merlin's likely still mid-gesture. The next scheduled tick will
+    // Drop — Saeed's likely still mid-gesture. The next scheduled tick will
     // pick something fresh instead of piling on.
     return;
   }
@@ -148,7 +148,7 @@ function send(name: AnimationName, opts: SendOpts = {}): void {
 
 /** Hard-stop the current animation + clear the renderer's queue. Used when we */
 /** need the next animation to start RIGHT NOW (drag start/end being the */
-/** canonical case — a drag is the user yanking Merlin around, so whatever */
+/** canonical case — a drag is the user yanking Saeed around, so whatever */
 /** subtle Look or Idle was playing should be cut short). Also resets the */
 /** send-throttle so the following send() call doesn't get dropped. */
 function interruptCurrent(): void {
@@ -172,7 +172,7 @@ function pickAnim(candidates: readonly AnimationName[]): AnimationName | null {
 // Each mood tilts random selection toward animations that feel in-character.
 // `fidget`: short reactive gestures (user did something, default idle nudge).
 // `speaking`: short "I'm talking" gestures during voice playback.
-// `wake`: animation played when Merlin wakes from sleep.
+// `wake`: animation played when Saeed wakes from sleep.
 // `success`: positive tool/result reaction.
 // `failure`: negative tool/result reaction.
 
@@ -247,7 +247,7 @@ const PALETTES: Record<Mood, MoodPalette> = {
   },
   sleepy: {
     // No RestPose anywhere — it's the static "sleep pose" reserved for the
-    // sleep timer fire. Using it as a fidget made Merlin look like he was
+    // sleep timer fire. Using it as a fidget made Saeed look like he was
     // dozing off mid-interaction. Picked calmer Look/Idle gestures instead.
     fidget: ['LookDownBlink', 'LookDown', 'Idle1_1', 'Idle2_1', 'Blink'],
     speaking: ['Acknowledge', 'Explain', 'Blink'],
@@ -296,7 +296,7 @@ async function palette(): Promise<MoodPalette> {
   // mood (or cheerful, if mood is also off) is the only signal.
   if (!isEnabled('behavior.animation.energy_modulation')) return base;
   // Only inject sleepy gestures when BOTH conditions hit (low energy AND late
-  // night) — single condition alone isn't enough to override Merlin's actual
+  // night) — single condition alone isn't enough to override Saeed's actual
   // mood. Prevents the "sleepy fidgets all morning because he didn't sleep"
   // problem and the "sleepy fidgets right after interaction" problem.
   if (veryLowEnergy && lateNight) {
@@ -362,7 +362,7 @@ function scheduleNextSpeakingGesture(): void {
 // ── Thinking gesture cycle (while LLM is generating) ─────────────────────────
 //
 // Long LLM turns (especially Hermes tool-using flows) can take 10-30s. Without
-// a cycle, Merlin fires Think once at chatStart and then just stands there
+// a cycle, Saeed fires Think once at chatStart and then just stands there
 // looking blank for the rest of the wait. The cycle re-fires a thinking-flavor
 // animation every 3-6s so the user has constant feedback that something is
 // actually happening.
@@ -427,7 +427,7 @@ function armSleepTimer(): void {
   }, SLEEP_AFTER_MS);
 }
 
-/** Wake Merlin if asleep — fired on any deliberate user input. */
+/** Wake Saeed if asleep — fired on any deliberate user input. */
 async function wakeIfSleeping(): Promise<void> {
   if (intent !== 'sleeping') return;
   decayEnergy();
@@ -521,7 +521,7 @@ function setIntent(next: Intent, reason: string): void {
 // ── Eye-tracking ─────────────────────────────────────────────────────────────
 //
 // Every ~5s, glance at the actual cursor position. Computes which direction
-// the cursor is relative to Merlin's window center and fires LookLeft/Right/
+// the cursor is relative to Saeed's window center and fires LookLeft/Right/
 // Up/Down. Only runs while idle — speaking/reacting/thinking states are too
 // busy to add gaze on top.
 
@@ -539,8 +539,8 @@ function clearEyeTimer(): void {
 
 function scheduleNextEyeCheck(): void {
   clearEyeTimer();
-  // Energy modulates: sleepy Merlin glances less often (~10-18s), energetic
-  // glances often (~4-9s). Sleeping Merlin doesn't glance at all.
+  // Energy modulates: sleepy Saeed glances less often (~10-18s), energetic
+  // glances often (~4-9s). Sleeping Saeed doesn't glance at all.
   if (intent === 'sleeping') return;
   const e = energyFactor();
   const base = EYE_CHECK_MIN_MS + (1 - e) * 5_000;
@@ -582,14 +582,14 @@ function tickEyeTracking(): void {
 // fire the copter-hat idle (Idle3_2) once we've moved enough to know this is
 // a real drag, not a misclick. The drag heartbeat in registerHandlers re-fires
 // the same animation so it keeps playing for the duration of the drag.
-// Idle3_2 is non-directional (Merlin's copter-hat appears, no L/R/U/D lean),
+// Idle3_2 is non-directional (Saeed's copter-hat appears, no L/R/U/D lean),
 // so the visual is consistent regardless of which way the user is dragging.
 
 let dragAccumDx = 0;
 let dragAccumDy = 0;
 let dragAnimStarted = false;
 const DRAG_START_THRESHOLD_PX = 6;
-// MoveUp is the copter-hat-glides-upward animation — the cleanest "Merlin is
+// MoveUp is the copter-hat-glides-upward animation — the cleanest "Saeed is
 // in transit" look across the four directional Move* sprites. We use it
 // regardless of drag direction because clippyjs's directional Move* sprites
 // don't read well when the actual motion is driven by the user's hand: the
@@ -684,7 +684,7 @@ export function reactToDragStart(): void {
 /** if the user holds without moving. */
 export function reactToDrag(dx: number, dy: number): void {
   if (intent === 'hidden') return;
-  // Drags during chat lifecycle don't get a drag animation — Merlin's already
+  // Drags during chat lifecycle don't get a drag animation — Saeed's already
   // busy. The user is just repositioning him out of the way.
   if (intent === 'thinking' || intent === 'speaking' || intent === 'doing') return;
   dragAccumDx += dx;
@@ -703,7 +703,7 @@ export function reactToDrag(dx: number, dy: number): void {
 
 /** Drag finished. Let any in-flight MoveUp continue playing — interrupting */
 /** would discard the queued animation and the user would see nothing at */
-/** all. Schedule a calm idle gesture ~1.5s after release so Merlin visibly */
+/** all. Schedule a calm idle gesture ~1.5s after release so Saeed visibly */
 /** returns to a resting pose once MoveUp has had time to play. */
 export function reactToDragEnd(): void {
   if (intent === 'hidden') return;
@@ -764,7 +764,7 @@ export function chatStart(): void {
   // every 3-5.5s until the first reply chunk arrives (chatFirstReply will
   // transition us to 'speaking', which cancels the thinking cycle via
   // setIntent). For long LLM turns (especially tool-heavy Hermes flows)
-  // this keeps the user from staring at a frozen Merlin for 30+ seconds.
+  // this keeps the user from staring at a frozen Saeed for 30+ seconds.
   send('Think', { important: true });
   scheduleNextThinkingGesture();
 }
@@ -785,7 +785,7 @@ export function chatEnd(): void {
   // currently-playing gesture so a long speaking/thinking anim doesn't
   // overhang past the end of TTS audio. ClippyController.stop() handles
   // both via agent.stop + queue.clear, then sets up the natural idle
-  // scheduler so Merlin doesn't freeze on a final frame.
+  // scheduler so Saeed doesn't freeze on a final frame.
   interruptCurrent();
   setIntent('idle', 'chat-end');
 }
@@ -883,12 +883,12 @@ export async function setHidden(opts: { force?: boolean } = {}): Promise<void> {
   };
   if (bubble && bubble.isVisible() && (opts.force || !bubble.isFocused())) hideBubble();
   if (panel && panel.isVisible() && (opts.force || !panel.isFocused())) hideChatPanel();
-  await hideMerlinWithAnimation();
+  await hideSaeedWithAnimation();
 }
 
 export async function setVisible(): Promise<void> {
   if (intent === 'hidden') setIntent('idle', 'show');
-  await showMerlinWithAnimation();
+  await showSaeedWithAnimation();
   // Re-show whichever chat surface was visible when we hid. The bubble is
   // ephemeral (re-appears on its own via showBubble), so we don't proactively
   // re-show it. The panel is persistent though — bring it back if it was up.
@@ -899,11 +899,11 @@ export async function setVisible(): Promise<void> {
   wasVisibleBeforeHide = { bubble: false, panel: false };
 }
 
-/** App lost focus — Merlin glances away (subtle, not always). */
+/** App lost focus — Saeed glances away (subtle, not always). */
 export function reactToAppBlur(): void {
   if (intent !== 'idle') return;
   if (!isEnabled('behavior.brain.app_blur_reaction')) return;
-  // 40% chance, modulated by energy — sleepy Merlin doesn't bother.
+  // 40% chance, modulated by energy — sleepy Saeed doesn't bother.
   if (Math.random() > 0.4 * energyFactor()) return;
   setIntent('reacting', 'app-blur');
   send(Math.random() < 0.5 ? 'LookLeft' : 'LookRight');
