@@ -122,7 +122,7 @@ function buildBrainSubmenu(
         const result = await forceTickActiveBrain();
         const { Notification } = await import('electron');
         new Notification({
-          title: 'Merlin brain test',
+          title: 'Saeed brain test',
           body: result,
           silent: true,
         }).show();
@@ -138,8 +138,8 @@ function buildBrainSubmenu(
   ];
 }
 
-export interface MerlinMenuActions {
-  askMerlin: () => void;
+export interface SaeedMenuActions {
+  askSaeed: () => void;
   onZoomChange?: () => void | Promise<void>;
   onMuteChange?: () => void | Promise<void>;
   onVoiceChange?: () => void | Promise<void>;
@@ -151,7 +151,7 @@ export interface MerlinMenuActions {
   onAppearanceChange?: () => void | Promise<void>;
 }
 
-export async function buildMerlinMenu(actions: MerlinMenuActions): Promise<Menu> {
+export async function buildSaeedMenu(actions: SaeedMenuActions): Promise<Menu> {
   const { hasSecret } = await import('./storage/secrets');
   const [
     currentZoom, muted, mood, voiceEngine, tasks, llmLabel, charId, autoStart, settings,
@@ -226,7 +226,7 @@ export async function buildMerlinMenu(actions: MerlinMenuActions): Promise<Menu>
 
   const tasksSubmenu: MenuItemConstructorOptions[] =
     tasks.length === 0
-      ? [{ label: '(no tasks — ask Merlin to add some)', enabled: false }]
+      ? [{ label: '(no tasks — ask Saeed to add some)', enabled: false }]
       : tasks.map(
           (t): MenuItemConstructorOptions => ({
             label: t.title,
@@ -456,20 +456,20 @@ export async function buildMerlinMenu(actions: MerlinMenuActions): Promise<Menu>
     { type: 'separator' },
 
     // Quick actions — what the user wants one click away.
-    { label: 'Ask Merlin... (chat)', click: () => actions.askMerlin() },
+    { label: 'Ask Saeed... (chat)', click: () => actions.askSaeed() },
     { label: `Tasks (${tasks.length})`, submenu: tasksSubmenu },
     { label: 'Stop Voice', click: () => cancelVoice() },
     { type: 'separator' },
 
     // Sprite control row.
     {
-      label: 'Show Merlin',
+      label: 'Show Saeed',
       click: async () => {
         if (!getSpriteWindow()) await createSpriteWindow();
         else await setVisible();
       },
     },
-    { label: 'Hide Merlin', click: () => void setHidden({ force: true }) },
+    { label: 'Hide Saeed', click: () => void setHidden({ force: true }) },
     { label: 'Size', submenu: sizeSubmenu },
     {
       label: 'Mute Sound Effects',
@@ -497,6 +497,6 @@ export async function buildMerlinMenu(actions: MerlinMenuActions): Promise<Menu>
     { label: 'Settings...', click: () => openSettingsWindow() },
     { label: 'Developer', submenu: developerSubmenu },
     { type: 'separator' },
-    { label: 'Quit Merlin', click: () => app.quit() },
+    { label: 'Quit Saeed', click: () => app.quit() },
   ]);
 }
