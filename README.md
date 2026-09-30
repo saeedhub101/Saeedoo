@@ -1,8 +1,8 @@
 # Saeed
 
-Saeed is a Windows desktop AI companion inspired by the classic animated-assistant experience, including the ideas behind **Merlin the Wizard** — but this repository is being developed as its own project with its own identity, architecture, behavior, and future roadmap.
+Saeed is a Windows desktop AI companion inspired by the classic animated-assistant experience, developed as its own project with its own identity, architecture, behavior, and future roadmap.
 
-The goal is not to make a copy of Merlin. The goal is to take the useful ideas from that style of assistant and evolve them into **Saeed**: a practical desktop AI companion that can talk, listen, act, remember context, use tools, and eventually operate the Windows environment with clear permission controls.
+The goal is to evolve the classic animated-assistant experience into **Saeed**: a practical desktop AI companion that can talk, listen, act, remember context, use tools, and eventually operate the Windows environment with clear permission controls.
 
 ## Project identity
 
@@ -43,7 +43,7 @@ The current foundation already contains several important systems:
 
 ## The brain architecture
 
-One of the core ideas Saeed inherits from the Merlin project is separating the **brain** from the **desktop world**.
+One of the core ideas in Saeed is separating the **brain** from the **desktop world**.
 
 Saeed's brain layer can reason about context and choose an action without directly owning the Electron window implementation.
 
@@ -193,7 +193,7 @@ Errors should be visible in logs/diagnostics and should not silently disappear.
 
 ### 7. Keep the project independently identifiable
 
-Saeed is its own product and should not depend on the Merlin project's branding, repository metadata, release configuration, or ownership.
+Saeed is its own product and should not depend on another project's branding, repository metadata, release configuration, or ownership.
 
 ## Development
 
@@ -266,7 +266,7 @@ The verification step exists to prevent a common desktop-companion failure where
 
 ### Phase 1 — Saeed foundation
 - Establish Saeed branding and project identity
-- Preserve the useful Merlin architecture
+- Preserve the useful desktop-assistant architecture
 - Stabilize character, chat, voice, settings, and brain foundations
 - Keep the build/package pipeline reliable
 
@@ -305,9 +305,9 @@ The verification step exists to prevent a common desktop-companion failure where
 - User-configurable skills
 - Safe autonomous workflows
 
-## Relationship to Merlin
+## Saeed architecture
 
-Saeed was started from a codebase containing ideas and components from **Merlin the Wizard**.
+Saeed uses a desktop-assistant architecture with the character presentation replaced by the Saeed 3D renderer.
 
 That project is treated as the inspiration/base reference. Saeed is developed separately in this repository and is intended to evolve in a different direction.
 
