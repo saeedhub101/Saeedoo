@@ -11,7 +11,7 @@ import { logger } from './logger';
  * approach, which is robust precisely because it does NOT silently self-install:
  *
  *   1. Check the GitHub Releases API for a newer tag than app.getVersion().
- *   2. Download the published Merlin-Setup.exe to a temp dir.
+ *   2. Download the published Saeed-Setup.exe to a temp dir.
  *   3. Launch the installer as a detached process and quit — the user sees the
  *      full NSIS installer UI and can click through Windows SmartScreen's
  *      "More info -> Run anyway" prompt.
@@ -23,10 +23,10 @@ import { logger } from './logger';
  * actually land.
  */
 
-const REPO = 'therealgorgan/merlin-the-wizard';
+const REPO = 'saeedhub101/Saeedoo';
 const LATEST_API = `https://api.github.com/repos/${REPO}/releases/latest`;
 // Stable redirect to the newest release's asset — survives version bumps.
-const INSTALLER_URL = `https://github.com/${REPO}/releases/latest/download/Merlin-Setup.exe`;
+const INSTALLER_URL = `https://github.com/${REPO}/releases/latest/download/Saeed-Setup.exe`;
 
 const STARTUP_DELAY_MS = 10_000;
 const CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000;
@@ -60,7 +60,7 @@ function isNewer(remote: string, current: string): boolean {
 function httpGetJson(url: string): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
     const req = net.request({ url, redirect: 'follow' });
-    req.setHeader('User-Agent', 'merlin-the-wizard-updater');
+    req.setHeader('User-Agent', 'saeed-updater');
     req.setHeader('Accept', 'application/vnd.github+json');
     req.on('response', (res) => {
       const status = res.statusCode ?? 0;
@@ -100,9 +100,9 @@ function downloadInstaller(onProgress?: (pct: number) => void): Promise<string> 
   return new Promise((resolve, reject) => {
     mkdtemp(join(tmpdir(), 'merlin-update-'))
       .then((dir) => {
-        const dest = join(dir, 'Merlin-Setup.exe');
+        const dest = join(dir, 'Saeed-Setup.exe');
         const req = net.request({ url: INSTALLER_URL, redirect: 'follow' });
-        req.setHeader('User-Agent', 'merlin-the-wizard-updater');
+        req.setHeader('User-Agent', 'saeed-updater');
         req.on('response', (res) => {
           const status = res.statusCode ?? 0;
           if (status >= 400) {
@@ -191,7 +191,7 @@ export async function checkAndMaybeUpdate(interactive: boolean): Promise<void> {
       if (interactive) {
         await dialog.showMessageBox({
           type: 'info',
-          title: 'Merlin is up-to-date',
+          title: 'Saeed is up-to-date',
           message: `You're running v${app.getVersion()} — the latest published release.`,
         });
       }
@@ -205,10 +205,10 @@ export async function checkAndMaybeUpdate(interactive: boolean): Promise<void> {
       defaultId: 0,
       cancelId: 2,
       title: 'Update available',
-      message: `Merlin v${info.version} is available (you have v${app.getVersion()}).`,
+      message: `Saeed v${info.version} is available (you have v${app.getVersion()}).`,
       detail:
         (info.notes ? `${info.notes}\n\n` : '') +
-        'Merlin will download the installer, then open it so you can confirm.',
+        'Saeed will download the installer, then open it so you can confirm.',
     });
 
     if (offer.response === 1) {
@@ -239,9 +239,9 @@ export async function checkAndMaybeUpdate(interactive: boolean): Promise<void> {
       defaultId: 0,
       cancelId: 1,
       title: 'Update ready',
-      message: `Merlin v${info.version} is ready to install.`,
+      message: `Saeed v${info.version} is ready to install.`,
       detail:
-        'The installer will open and Merlin will close. If Windows shows a ' +
+        'The installer will open and Saeed will close. If Windows shows a ' +
         'security prompt, choose "More info → Run anyway".',
     });
 
