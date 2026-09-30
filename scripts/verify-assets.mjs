@@ -87,7 +87,7 @@ async function verifyPackage() {
   if (stat.size < MIN_BYTES) throw new Error(`package: app.asar is unexpectedly small: ${stat.size} bytes`);
 
   const asar = (await import('@electron/asar')).default ?? (await import('@electron/asar'));
-  const inner = join('out', GLB_REL).replaceAll('\\\\', '/');
+  const inner = join('out', GLB_REL).replaceAll('\\', '/');
   const buf = asar.extractFile(asarPath, inner);
   if (!buf || buf.length < MIN_BYTES) throw new Error(`package: ${inner} missing or too small`);
   const animations = parseGlb(buf, 'package');
