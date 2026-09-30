@@ -13,7 +13,7 @@ import {
 } from './windows/spriteWindow';
 import { createDebugWindow } from './windows/debugWindow';
 import { registerIpcHandlers } from './ipc/registerHandlers';
-import { buildMerlinMenu } from './contextMenu';
+import { buildSaeedMenu } from './contextMenu';
 import { openAskBubble } from './interaction';
 import { playWelcome } from './welcome';
 import { attachSpriteMoveSync } from './moveSync';
@@ -39,8 +39,8 @@ let tray: Tray | null = null;
 async function rebuildTrayMenu(): Promise<void> {
   if (!tray) return;
   tray.setContextMenu(
-    await buildMerlinMenu({
-      askMerlin: () => openAskBubble(),
+    await buildSaeedMenu({
+      askSaeed: () => openAskBubble(),
       onZoomChange: () => rebuildTrayMenu(),
       onMuteChange: () => rebuildTrayMenu(),
       onVoiceChange: () => rebuildTrayMenu(),
@@ -66,7 +66,7 @@ function buildTray(): void {
   }
 
   tray = new Tray(image);
-  tray.setToolTip('Merlin the Wizard');
+  tray.setToolTip('Saeed the Wizard');
   void rebuildTrayMenu();
 
   tray.on('click', async () => {
@@ -78,7 +78,7 @@ function buildTray(): void {
 }
 
 app.whenReady().then(async () => {
-  logger.info('Merlin starting');
+  logger.info('Saeed starting');
   logger.info('.env load result:', envResult);
   logger.info(
     'AI:',
@@ -145,7 +145,7 @@ app.whenReady().then(async () => {
     startProactiveBehaviors();
 
     // First-time Setup Wizard: auto-pop ~2s after the sprite plays Greet so
-    // the user gets the "oh, there's Merlin!" moment before any config UI.
+    // the user gets the "oh, there's Saeed!" moment before any config UI.
     // Suppressed once the user has finished (or dismissed) the wizard via
     // the firstRunComplete store flag.
     if (!settings.firstRunComplete) {
@@ -159,7 +159,7 @@ app.whenReady().then(async () => {
     }
   });
 
-  // App-level focus changes: Merlin glances away when the user switches to
+  // App-level focus changes: Saeed glances away when the user switches to
   // another app, perks up when they come back. Both are probability-gated
   // and energy-weighted inside the controller so it doesn't feel busy.
   app.on('browser-window-blur', () => reactToAppBlur());
@@ -182,7 +182,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
-  logger.info('Merlin quitting');
+  logger.info('Saeed quitting');
   unregisterAllHotkeys();
 });
 
