@@ -8,9 +8,9 @@ import { ANIMATIONS } from '@shared/animations';
 import type { BrainContext, BrainController } from './types';
 
 // Local-LLM brain controller. On each tick (coarse cadence) we send a single
-// generateObject call to a local Ollama-hosted model asking what Merlin
+// generateObject call to a local Ollama-hosted model asking what Saeed
 // should do next. The model picks one bounded action from a discriminated
-// union — it cannot send arbitrary IPC, move Merlin off-screen, or invoke
+// union — it cannot send arbitrary IPC, move Saeed off-screen, or invoke
 // tools. Every action routes through the BrainContext methods which honor
 // feature flags (unless behavior.brain_controller.allow_override_actions
 // is on).
@@ -53,9 +53,9 @@ const ActionSchema = z.discriminatedUnion('action', [
 
 type BrainAction = z.infer<typeof ActionSchema>;
 
-const SYSTEM_PROMPT = `You are the autonomous brain of Merlin — a Microsoft Agent–style desktop companion.
-Each call you make, you decide what Merlin should do RIGHT NOW given his state.
-Pick ONE action. Most of the time the right answer is "noop" — Merlin shouldn't
+const SYSTEM_PROMPT = `You are the autonomous brain of Saeed — a Microsoft Agent–style desktop companion.
+Each call you make, you decide what Saeed should do RIGHT NOW given his state.
+Pick ONE action. Most of the time the right answer is "noop" — Saeed shouldn't
 be twitchy. Only emit an idle thought every several ticks at most.
 
 Tone: warm, slightly old-fashioned, whimsical. Short. Never break character.
@@ -65,7 +65,7 @@ thought text.
 Action menu:
 - noop: do nothing this tick. Default choice.
 - idle_thought: surface a short whimsical thought (≤140 chars ideal).
-- wander: have Merlin drift to a new spot on screen.
+- wander: have Saeed drift to a new spot on screen.
 - play_animation: play one named animation from the allowed list.
 - nudge: small attention-getting wiggle.
 
@@ -170,7 +170,7 @@ export function makeLocalLlmBrain(): BrainController {
 
   async function tick(ctx: BrainContext): Promise<void> {
     if (inflight || stopRequested) return;
-    // Don't fight an in-flight chat. (User typing/Merlin speaking should win.)
+    // Don't fight an in-flight chat. (User typing/Saeed speaking should win.)
     const intent = ctx.getIntent();
     if (intent === 'thinking' || intent === 'speaking' || intent === 'doing') return;
     if (ctx.msSinceLastInteraction() < IDLE_FLOOR_MS) return;
@@ -198,7 +198,7 @@ export function makeLocalLlmBrain(): BrainController {
     try {
       const action = await decide(ctx);
       if (!action) return 'timed out — model may be cold-loading; try again in 1–2 min';
-      // Run the action for real so the user can see Merlin actually do it.
+      // Run the action for real so the user can see Saeed actually do it.
       await dispatchAction(ctx, action);
       switch (action.action) {
         case 'noop':
