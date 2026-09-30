@@ -77,6 +77,6 @@ export class SaeedAnimationController {
   }
 
   isAnimating(): boolean {
-    return this.activeAction?.isRunning() || this.activeAction === this.idleAction;
+    return Boolean(this.activeAction?.isRunning() || this.activeAction === this.idleAction);
   }
 }
