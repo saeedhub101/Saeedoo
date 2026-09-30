@@ -59,7 +59,7 @@ const VOICE_ENGINES = [
   {
     id: 'off',
     label: 'No voice (text only)',
-    desc: 'Merlin replies in text. Quiet, simple, no setup.',
+    desc: 'Saeed replies in text. Quiet, simple, no setup.',
   },
 ];
 
@@ -87,7 +87,7 @@ function App(): React.ReactElement {
 
   // Per-step working state.
   const [userName, setUserName] = useState('');
-  const [characterId, setCharacterId] = useState('Merlin');
+  const [characterId, setCharacterId] = useState('Saeed');
   const [providerId, setProviderId] = useState<string>('groq');
   const [providerModel, setProviderModel] = useState('');
   const [providerKey, setProviderKey] = useState('');
@@ -185,9 +185,9 @@ function App(): React.ReactElement {
       <>
         <div className="welcome-hero">
           <div className="emoji" aria-hidden="true">🧙</div>
-          <h1>Welcome to Merlin the Wizard</h1>
+          <h1>Welcome to Saeed</h1>
           <div className="sub">
-            A desktop companion that recreates the Microsoft Agent Merlin
+            A desktop companion with the classic Microsoft Agent-style experience, powered by Saeed
             sprite as a modern LLM-backed assistant.
           </div>
         </div>
@@ -195,8 +195,8 @@ function App(): React.ReactElement {
           This setup takes about <strong>2 minutes</strong>. We'll walk through:
         </p>
         <ul style={{ color: 'var(--muted)', lineHeight: 1.6 }}>
-          <li>Your name (what Merlin calls you)</li>
-          <li>Pick a character (Merlin / Genie / Robby / Links / ...)</li>
+          <li>Your name (what Saeed calls you)</li>
+          <li>Pick a character (Saeed / Genie / Links / ...)</li>
           <li>Pick a chat LLM (Groq is free + fast — recommended)</li>
           <li>Pick a voice (or skip)</li>
           <li>Classic bubble or modern panel</li>
@@ -212,7 +212,7 @@ function App(): React.ReactElement {
   function renderName(): React.ReactElement {
     return (
       <>
-        <h2>What should Merlin call you?</h2>
+        <h2>What should Saeed call you?</h2>
         <p className="muted">
           Optional. Leave blank to use your Windows account name.
         </p>
@@ -236,7 +236,7 @@ function App(): React.ReactElement {
       <>
         <h2>Pick a character</h2>
         <p className="muted">
-          The sprite Merlin uses. You can swap any time from the tray menu's{' '}
+          The character Saeed uses. You can swap any time from the tray menu's{' '}
           <code>Customize → Character</code>.
         </p>
         {characters.map((c) => (
@@ -254,7 +254,7 @@ function App(): React.ReactElement {
               />
               {c.displayName}
               {c.custom ? <span className="badge info">Custom</span> : null}
-              {c.id === 'Merlin' ? <span className="badge rec">Default</span> : null}
+              {c.id === 'Saeed' ? <span className="badge rec">Default</span> : null}
             </div>
             <div className="desc">{c.description}</div>
           </div>
@@ -269,7 +269,7 @@ function App(): React.ReactElement {
       <>
         <h2>Pick a Chat LLM</h2>
         <p className="muted">
-          The model that answers when you chat with Merlin. <strong>Groq</strong>{' '}
+          The model that answers when you chat with Saeed. <strong>Groq</strong>{' '}
           has a generous free tier and is the fastest cloud option —{' '}
           <button
             className="link"
@@ -356,7 +356,7 @@ function App(): React.ReactElement {
       <>
         <h2>Pick a voice engine</h2>
         <p className="muted">
-          How Merlin speaks his replies. Edge Neural is free and sounds great —
+          How Saeed speaks his replies. Edge Neural is free and sounds great —
           recommended unless you want fully offline.
         </p>
         {VOICE_ENGINES.map((v) => (
@@ -387,7 +387,7 @@ function App(): React.ReactElement {
       <>
         <h2>Pick a chat style</h2>
         <p className="muted">
-          How chat with Merlin is presented. You can switch any time from the
+          How chat with Saeed is presented. You can switch any time from the
           tray menu's <code>Customize → Chat Style</code>.
         </p>
         <div
@@ -405,7 +405,7 @@ function App(): React.ReactElement {
             <span className="badge rec">Nostalgic</span>
           </div>
           <div className="desc">
-            The original Microsoft Agent vibe. A tiny transparent Merlin
+            The original Microsoft Agent vibe. A tiny transparent Saeed
             sprite and a yellow speech bubble that pops up beside him when
             he replies.
           </div>
@@ -440,8 +440,8 @@ function App(): React.ReactElement {
       <>
         <h2>All set</h2>
         <div className="alert ok">
-          ✓ Merlin is ready. You can change anything in <strong>Settings</strong>{' '}
-          (right-click Merlin → Settings).
+          ✓ Saeed is ready. You can change anything in <strong>Settings</strong>{' '}
+          (right-click Saeed → Settings).
         </div>
         <p className="muted">
           Your setup:
@@ -462,10 +462,10 @@ function App(): React.ReactElement {
             borderRadius: 8,
           }}
         >
-          <strong>Want Merlin to think autonomously?</strong>
+          <strong>Want Saeed to think autonomously?</strong>
           <div className="muted" style={{ fontSize: 12, marginTop: 4, marginBottom: 10 }}>
             The Brain Setup Wizard walks you through installing Ollama and
-            picking a tiny local model so Merlin can emit idle thoughts,
+            picking a tiny local model so Saeed can emit idle thoughts,
             wander, and gesture on his own every few minutes. Optional and
             entirely free.
           </div>
@@ -508,7 +508,7 @@ function App(): React.ReactElement {
     return (
       <>
         <header>
-          <h1>Welcome to Merlin</h1>
+          <h1>Welcome to Saeed</h1>
         </header>
         <main>
           <p>Loading…</p>
