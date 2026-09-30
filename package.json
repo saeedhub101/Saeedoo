@@ -1,6 +1,6 @@
 {
   "name": "saeed",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "description": "Saeed — a Windows desktop AI companion inspired by classic animated assistants, rebuilt with modern LLM, voice, brain, tools, and customizable characters.",
   "main": "out/main/index.js",
   "author": "Saeed O. Almansour",
@@ -49,7 +49,8 @@
     "dist": "npm run assets && node scripts/verify-assets.mjs && electron-vite build && node scripts/verify-assets.mjs --build && electron-builder && node scripts/verify-assets.mjs --package",
     "dist:portable": "npm run assets && node scripts/verify-assets.mjs && electron-vite build && node scripts/verify-assets.mjs --build && electron-builder --config.win.target=portable && node scripts/verify-assets.mjs --package",
     "assets": "node scripts/prepare-saeed-assets.mjs",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "check:version": "node scripts/check-version.mjs"
   },
   "dependencies": {
     "@ai-sdk/groq": "^1.0.0",
