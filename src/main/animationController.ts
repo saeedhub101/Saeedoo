@@ -1,6 +1,6 @@
 import { screen } from 'electron';
 import { IDLE_ANIMATIONS, isAnimationName, type AnimationName } from '@shared/animations';
-import { getSpriteWindow, wiggleSprite } from './windows/spriteWindow';
+import { getSpriteWindow, hideSaeedWithAnimation, showSaeedWithAnimation, wiggleSprite } from './windows/spriteWindow';
 import { characterController } from './character/CharacterController';
 import { getMood, type Mood } from './feelings';
 import { getValue, isEnabled } from './extensions';
