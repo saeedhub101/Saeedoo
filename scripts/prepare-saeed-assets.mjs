@@ -1,5 +1,5 @@
 // Prepares the Saeed 3D runtime assets.
-// The 2D Merlin/clippyjs sprite packs are no longer downloaded or packaged.
+// The legacy 2D character packs are no longer downloaded or packaged.
 // The only character asset is the bundled Saeed GLB under
 // src/renderer/public/characters/Saeed.glb.
 //
