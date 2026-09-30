@@ -3,7 +3,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { createOllama } from 'ollama-ai-provider';
 import { streamText, type CoreMessage, type LanguageModelV1 } from 'ai';
 import { buildSystemPrompt, type PromptContext } from './systemPrompt';
-import { merlinTools } from './tools';
+import { saeedTools } from './tools';
 import { read as readStore } from '../storage/store';
 import { getMood } from '../feelings';
 import { getSecret } from '../storage/secrets';
@@ -213,7 +213,7 @@ export async function* streamChat(opts: StreamChatOpts): AsyncGenerator<string> 
     userName: settings.userName,
     mood,
     now: new Date(),
-    characterId: settings.character || 'Merlin',
+    characterId: settings.character || 'Saeed',
     externalAgent: providerId === 'hermes',
   };
   logger.debug('streamChat:', providerId, modelName);
@@ -239,13 +239,13 @@ export async function* streamChat(opts: StreamChatOpts): AsyncGenerator<string> 
   // Hermes profiles bring their own tool stack so we drop the overlapping
   // tools (web_search, task tools — Hermes has its own). But we KEEP the
   // body-control tools (move_to, move_relative, hide, show) because those
-  // drive Merlin's sprite specifically and Hermes has no equivalent. Without
-  // them, "slide left" can't actually move Merlin — the LLM just narrates.
+  // drive Saeed's character specifically and Hermes has no equivalent. Without
+  // them, "slide left" can't actually move Saeed — the LLM just narrates.
   const hermesTools = {
-    move_to: merlinTools.move_to,
-    move_relative: merlinTools.move_relative,
-    hide: merlinTools.hide,
-    show: merlinTools.show,
+    move_to: saeedTools.move_to,
+    move_relative: saeedTools.move_relative,
+    hide: saeedTools.hide,
+    show: saeedTools.show,
   };
   const activeTools = providerId === 'hermes' ? hermesTools : merlinTools;
   const args = {
