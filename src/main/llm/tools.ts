@@ -9,15 +9,15 @@ import {
 } from '../tasks';
 import {
   cornerCoords,
-  hideMerlinWithAnimation,
+  hideSaeedWithAnimation,
   relativeCoords,
-  showMerlinWithAnimation,
+  showSaeedWithAnimation,
   smoothMoveSpriteTo,
 } from '../windows/spriteWindow';
 import { webSearch } from '../tools/webSearch';
 import { logger } from '../logger';
 
-export const merlinTools = {
+export const saeedTools = {
   add_task: tool({
     description:
       "Add a task to the user's persistent to-do list. " +
@@ -85,7 +85,7 @@ export const merlinTools = {
 
   move_to: tool({
     description:
-      "Move Merlin's sprite smoothly to a screen corner or center. Use for " +
+      "Move Saeed's character smoothly to a screen corner or center. Use for " +
       "absolute repositioning: 'go to the top right', 'move to center', " +
       "'get out of the way' (pick a corner away from the user's focus).",
     parameters: z.object({
@@ -103,7 +103,7 @@ export const merlinTools = {
 
   move_relative: tool({
     description:
-      "Slide Merlin a relative distance in a direction (left/right/up/down) " +
+      "Slide Saeed a relative distance in a direction (left/right/up/down) " +
       "from his CURRENT position. Use for fuzzy positional commands: 'slide " +
       "left', 'scoot down a bit', 'move up', 'go right'. Pick 'small' for " +
       "subtle nudges (~100px), 'medium' for clear repositioning (~250px), " +
@@ -124,21 +124,21 @@ export const merlinTools = {
 
   hide: tool({
     description:
-      "Make Merlin disappear from the screen. Use when the user says 'go away', 'hide', " +
+      "Make Saeed disappear from the screen. Use when the user says 'go away', 'hide', " +
       "'leave me alone'. The user can bring you back from the tray menu.",
     parameters: z.object({}).strict(),
     execute: async () => {
-      await hideMerlinWithAnimation();
+      await hideSaeedWithAnimation();
       return { ok: true };
     },
   }),
 
   show: tool({
     description:
-      "Make Merlin reappear after being hidden. Rarely needed since you're usually visible.",
+      "Make Saeed reappear after being hidden. Rarely needed since you're usually visible.",
     parameters: z.object({}).strict(),
     execute: async () => {
-      await showMerlinWithAnimation();
+      await showSaeedWithAnimation();
       return { ok: true };
     },
   }),
@@ -159,4 +159,4 @@ export const merlinTools = {
   }),
 };
 
-export type MerlinTools = typeof merlinTools;
+export type SaeedTools = typeof saeedTools;
