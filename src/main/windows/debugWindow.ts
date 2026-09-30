@@ -12,7 +12,7 @@ export function createDebugWindow(): BrowserWindow {
   debugWindow = new BrowserWindow({
     width: 360,
     height: 640,
-    title: 'Merlin — Debug Panel',
+    title: 'Saeed — Debug Panel',
     show: false,
     webPreferences: {
       preload: join(__dirname, '../preload/debug.js'),
