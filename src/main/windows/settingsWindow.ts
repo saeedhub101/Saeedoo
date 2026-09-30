@@ -31,7 +31,7 @@ export function openSettingsWindow(opts: OpenSettingsOptions = {}): BrowserWindo
     height: 760,
     minWidth: 520,
     minHeight: 480,
-    title: 'Merlin — Settings',
+    title: 'Saeed — Settings',
     autoHideMenuBar: true,
     backgroundColor: '#1a1a1f',
     show: false,
