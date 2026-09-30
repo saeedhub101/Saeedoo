@@ -7,13 +7,8 @@ import {
   listTasks,
   removeTask,
 } from '../tasks';
-import {
-  cornerCoords,
-  hideSaeedWithAnimation,
-  relativeCoords,
-  showSaeedWithAnimation,
-  smoothMoveSpriteTo,
-} from '../windows/spriteWindow';
+import { cornerCoords, relativeCoords } from '../windows/spriteWindow';
+import { characterController } from '../character/CharacterController';
 import { webSearch } from '../tools/webSearch';
 import { logger } from '../logger';
 
@@ -96,7 +91,7 @@ export const saeedTools = {
     execute: async ({ corner }) => {
       const { x, y } = cornerCoords(corner);
       logger.info('move_to', corner, '->', x, y);
-      await smoothMoveSpriteTo(x, y, 900);
+      await characterController.moveTo(x, y, 900);
       return { ok: true, corner };
     },
   }),
@@ -117,7 +112,7 @@ export const saeedTools = {
     execute: async ({ direction, amount }) => {
       const { x, y } = relativeCoords(direction, amount ?? 'medium');
       logger.info('move_relative', direction, amount, '->', x, y);
-      await smoothMoveSpriteTo(x, y, 900);
+      await characterController.moveTo(x, y, 900);
       return { ok: true, direction, amount: amount ?? 'medium' };
     },
   }),
@@ -128,7 +123,7 @@ export const saeedTools = {
       "'leave me alone'. The user can bring you back from the tray menu.",
     parameters: z.object({}).strict(),
     execute: async () => {
-      await hideSaeedWithAnimation();
+      await characterController.play('Hide'); characterController.hide();
       return { ok: true };
     },
   }),
@@ -138,7 +133,7 @@ export const saeedTools = {
       "Make Saeed reappear after being hidden. Rarely needed since you're usually visible.",
     parameters: z.object({}).strict(),
     execute: async () => {
-      await showSaeedWithAnimation();
+      characterController.show(); await characterController.play('Show');
       return { ok: true };
     },
   }),
