@@ -1005,7 +1005,7 @@ function App(): React.ReactElement {
                 checked={settings.muteSounds === true}
                 onChange={(e) => void update({ muteSounds: e.target.checked })}
               />{' '}
-              Mute clippyjs animation sound effects
+              Mute character animation sound effects
             </label>
             <div className="status ext-desc">
               Silences the little &quot;ding&quot; / &quot;poof&quot; sounds baked into
