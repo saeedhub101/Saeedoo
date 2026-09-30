@@ -24,7 +24,7 @@ export interface StoreData {
   /** Cached list of all reachable Hermes profiles on the configured host. */
   /** Populated by the "Discover all" button; consumed by the tray submenu. */
   hermesProfiles: Array<{ name: string; url: string }>;
-  /** Avatar character to use (clippyjs agent name). */
+  /** Internal clippyjs asset ID; UI display name is Saeed. */
   character: string;
   /** Global hotkey to summon Saeed (Electron Accelerator string). */
   summonHotkey: string;
@@ -72,7 +72,7 @@ const DEFAULTS: StoreData = {
   ollamaEndpoint: 'http://localhost:11434/api',
   hermesEndpoint: '',
   hermesProfiles: [],
-  character: 'Saeed',
+  character: 'Merlin',
   summonHotkey: 'Control+Shift+M',
   autoStart: false,
   idleThoughtsEnabled: true,
