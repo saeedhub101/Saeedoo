@@ -11,7 +11,7 @@ let registered: string | null = null;
 let screenshotRegistered: string | null = null;
 
 async function fire(): Promise<void> {
-  // Make sure Merlin is visible and the ask bubble is open + focused.
+  // Make sure Saeed is visible and the ask bubble is open + focused.
   if (!getSpriteWindow()) await createSpriteWindow();
   else showSprite();
   openAskBubble();
