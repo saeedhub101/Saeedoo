@@ -1,5 +1,5 @@
-appId: com.merlinthewizard.app
-productName: Merlin the Wizard
+appId: com.saeed.ai
+productName: Saeed
 copyright: ""
 directories:
   output: dist
@@ -25,11 +25,11 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  artifactName: Merlin-Setup.${ext}
+  artifactName: Saeed-Setup.${ext}
 portable:
-  artifactName: Merlin-Portable.${ext}
+  artifactName: Saeed-Portable.${ext}
 publish:
   provider: github
-  owner: therealgorgan
-  repo: merlin-the-wizard
+  owner: saeedhub101
+  repo: Saeedoo
   releaseType: release
