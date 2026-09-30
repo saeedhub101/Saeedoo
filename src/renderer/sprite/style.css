@@ -10,15 +10,15 @@ body {
   -webkit-user-select: none;
 }
 
-#merlin-host {
+#saeed-host {
   position: absolute;
   inset: 0;
   cursor: grab;
 }
 
-#merlin-host:active,
-body.merlin-dragging,
-body.merlin-dragging * {
+#saeed-host:active,
+body.saeed-dragging,
+body.saeed-dragging * {
   cursor: grabbing !important;
 }
 
@@ -37,7 +37,7 @@ body > .clippy {
   position: absolute !important;
   left: 50% !important;
   top: 50% !important;
-  transform: translate(-50%, -50%) scale(var(--merlin-zoom, 1)) rotate(0deg);
+  transform: translate(-50%, -50%) scale(var(--saeed-zoom, 1)) rotate(0deg);
   transform-origin: center center;
   transition: transform 120ms ease-out, filter 120ms ease-out;
 }
@@ -56,7 +56,7 @@ body:not([data-appearance]) > .clippy * {
 
 /* Retouched appearance — let the browser smooth-upscale the sprite, then
    apply a subtle filter chain to firm up edges + give a soft drop-shadow
-   so Merlin reads as "rendered" rather than "blurred pixel art." */
+   so Saeed reads as "rendered" rather than "blurred pixel art." */
 body[data-appearance='retouched'] > .clippy {
   image-rendering: auto;
   image-rendering: high-quality;
@@ -75,34 +75,34 @@ body[data-appearance='retouched'] > .clippy * {
    effects are GPU-composited so they render even while clippyjs's
    background-position frame swap can be deferred by the compositor
    during rapid window moves. */
-body.merlin-dragging > .clippy {
+body.saeed-dragging > .clippy {
   /* Defaults compose the full set of effects. Individual flags toggle each
      piece off via attribute selectors below (data-flag-drag-scale="false"
      drops the scale-up, etc.). The sway tilt CSS variable is set to 0 by
      the renderer when sway is off, so no override needed for that one. */
   transform:
     translate(-50%, -50%)
-    scale(calc(var(--merlin-zoom, 1) * var(--merlin-drag-scale, 1.08)))
-    rotate(var(--merlin-drag-tilt, 0deg));
+    scale(calc(var(--saeed-zoom, 1) * var(--saeed-drag-scale, 1.08)))
+    rotate(var(--saeed-drag-tilt, 0deg));
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.55));
   transition: transform 80ms ease-out, filter 120ms ease-out;
 }
 body[data-flag-drag-scale='false'] {
-  --merlin-drag-scale: 1.0;
+  --saeed-drag-scale: 1.0;
 }
-body[data-flag-drag-shadow='false'].merlin-dragging > .clippy {
+body[data-flag-drag-shadow='false'].saeed-dragging > .clippy {
   filter: none;
 }
 body[data-flag-drag-sway='false'] {
-  --merlin-drag-tilt: 0deg;
+  --saeed-drag-tilt: 0deg;
 }
-body[data-appearance='retouched'].merlin-dragging > .clippy {
+body[data-appearance='retouched'].saeed-dragging > .clippy {
   filter:
     contrast(1.06)
     saturate(1.05)
     drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55));
 }
-body[data-flag-drag-shadow='false'][data-appearance='retouched'].merlin-dragging > .clippy {
+body[data-flag-drag-shadow='false'][data-appearance='retouched'].saeed-dragging > .clippy {
   filter: contrast(1.06) saturate(1.05);
 }
 
