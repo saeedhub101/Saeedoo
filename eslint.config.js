@@ -1,4 +1,5 @@
 import tsParser from '@typescript-eslint/parser';
+import tseslint from '@typescript-eslint/eslint-plugin';
 
 export default [
   {
@@ -12,6 +13,9 @@ export default [
         ecmaVersion: 'latest',
         sourceType: 'module'
       }
+    },
+    plugins: {
+      '@typescript-eslint': tseslint
     }
   }
 ];
