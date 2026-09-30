@@ -7,9 +7,9 @@ import {
 } from '../tasks';
 import {
   cornerCoords,
-  hideMerlinWithAnimation,
+  hideSaeedWithAnimation,
   relativeCoords,
-  showMerlinWithAnimation,
+  showSaeedWithAnimation,
   smoothMoveSpriteTo,
 } from '../windows/spriteWindow';
 import { webSearch } from '../tools/webSearch';
@@ -91,12 +91,12 @@ const handlers: Record<string, Handler> = {
   },
 
   hide: async () => {
-    await hideMerlinWithAnimation();
+    await hideSaeedWithAnimation();
     return { ok: true };
   },
 
   show: async () => {
-    await showMerlinWithAnimation();
+    await showSaeedWithAnimation();
     return { ok: true };
   },
 
