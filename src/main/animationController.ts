@@ -1,13 +1,7 @@
 import { screen } from 'electron';
-import { IPC } from '@shared/ipc-contract';
 import { IDLE_ANIMATIONS, isAnimationName, type AnimationName } from '@shared/animations';
-import {
-  getSpriteWindow,
-  hideSaeedWithAnimation,
-  showSaeedWithAnimation,
-  wiggleSprite,
-} from './windows/spriteWindow';
-import { getActiveSpriteHost } from './activeSurface';
+import { getSpriteWindow, wiggleSprite } from './windows/spriteWindow';
+import { characterController } from './character/CharacterController';
 import { getMood, type Mood } from './feelings';
 import { getValue, isEnabled } from './extensions';
 import { logger } from './logger';
@@ -141,9 +135,7 @@ function send(name: AnimationName, opts: SendOpts = {}): void {
   }
   lastSendAt = now;
   rememberAnim(name);
-  void getActiveSpriteHost().then((w) => {
-    w?.webContents.send(IPC.spritePlay, name);
-  });
+  void characterController.play(name);
 }
 
 /** Hard-stop the current animation + clear the renderer's queue. Used when we */
@@ -153,9 +145,7 @@ function send(name: AnimationName, opts: SendOpts = {}): void {
 /** send-throttle so the following send() call doesn't get dropped. */
 function interruptCurrent(): void {
   lastSendAt = 0;
-  void getActiveSpriteHost().then((w) => {
-    w?.webContents.send(IPC.spriteStop);
-  });
+  characterController.stop();
 }
 
 /** Pick one of `candidates`, biased away from the recent ring buffer. */
