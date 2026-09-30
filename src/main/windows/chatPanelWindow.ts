@@ -148,7 +148,7 @@ export function focusPanelInput(): void {
   w.webContents.send(IPC.panelOpenForAsk);
 }
 
-/** Send an animation to the panel's embedded clippyjs sprite. */
+/** Legacy compatibility hook; animations now belong to the standalone Saeed window. */
 export function panelPlayAnimation(name: AnimationName): void {
   panelWindow?.webContents.send(IPC.spritePlay, name);
 }
