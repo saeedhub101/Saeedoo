@@ -1,0 +1,453 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #1a1a1f;
+  color: #e8e8ec;
+  font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* Defensive: prevent any deeply-nested element from pushing horizontal
+     scroll on the whole window. Vertical scroll lives on <main>. */
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+header {
+  padding: 14px 20px 8px;
+  border-bottom: 1px solid #2c2c34;
+  background: #15151a;
+}
+header h1 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+header .subtitle {
+  font-size: 11px;
+  color: #888;
+}
+
+/* Sidebar + content split for the tabbed Settings layout. */
+.settings-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 180px;
+  flex: 0 0 180px;
+  background: #15151a;
+  border-right: 1px solid #2c2c34;
+  padding: 12px 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  color: #b0b0b8;
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms, color 120ms, border-color 120ms;
+}
+
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #e8e8ec;
+}
+
+.sidebar-item.active {
+  background: rgba(90, 131, 209, 0.15);
+  color: #e8e8ec;
+  border-left-color: #5a83d1;
+  font-weight: 600;
+}
+
+.sidebar-icon {
+  font-size: 16px;
+  width: 18px;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.sidebar-label {
+  flex: 1 1 auto;
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+  /* Block accidental horizontal scroll. Any genuinely-wide content (long
+     model names, URLs) should wrap or truncate, not produce a scrollbar. */
+  overflow-x: hidden;
+  min-width: 0;
+  padding: 18px 22px;
+}
+
+/* Long inline tokens (model names, URLs in code spans, etc.) must wrap
+   rather than push their container wider. */
+main code {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+footer {
+  border-top: 1px solid #2c2c34;
+  background: #15151a;
+  padding: 10px 18px;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.saved-badge {
+  font-size: 11px;
+  color: #888;
+  transition: color 200ms ease;
+}
+.saved-badge.visible {
+  color: #6dca7e;
+  font-weight: 600;
+}
+
+section {
+  margin-bottom: 22px;
+}
+section h2 {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #b0b0b8;
+}
+
+.provider-card {
+  border: 1px solid #2c2c34;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: #20202a;
+  cursor: pointer;
+  transition: border-color 120ms, background 120ms;
+}
+.provider-card:hover {
+  border-color: #3a3a44;
+}
+.provider-card.active {
+  border-color: #5a83d1;
+  background: #20283a;
+}
+
+.provider-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.provider-header input[type='radio'] {
+  margin: 0;
+}
+.provider-header .name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.provider-header .badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+  padding: 2px 6px;
+  background: #2c2c34;
+  border-radius: 3px;
+  margin-left: auto;
+}
+.provider-header .badge.ok {
+  background: #1f3a25;
+  color: #6dca7e;
+}
+.provider-header .badge.warn {
+  background: #3a2825;
+  color: #d77b6b;
+}
+
+.provider-body {
+  padding-left: 24px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  /* Allow children to shrink — required to keep wide inputs/selects from
+     pushing the row past container width. */
+  min-width: 0;
+  /* Allow children with flex-basis: 100% (like .ext-desc) to actually wrap
+     onto their own line. Without wrap, the label gets squeezed one-word-
+     per-line and the select/input gets crushed to nothing. */
+  flex-wrap: wrap;
+}
+
+/* Two-column packing for the short toggles in the Behavior section.
+   Wrap with .row-grid in JSX; each direct child becomes a grid cell. */
+.row-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 4px 16px;
+  margin-top: 8px;
+}
+.row-grid .row {
+  margin-top: 0;
+}
+.row label {
+  /* Was a hard 90px which clipped longer labels. Min 90, grow to content. */
+  flex: 0 0 auto;
+  min-width: 90px;
+  color: #b0b0b8;
+  font-size: 12px;
+}
+/* Checkbox rows wrap the whole description inside the <label> (so clicking
+   the text also toggles the box). The fixed 90px flex above was clipping
+   those wider labels into vertical wraps. Detect them via :has() and let
+   the label take the full row width. */
+.row label:has(input[type="checkbox"]) {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e8e8ec;
+  cursor: pointer;
+}
+.row label:has(input[type="checkbox"]) input[type="checkbox"] {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+/* Extensions section — subtle grouping headers + per-row descriptions. */
+.extensions-group { margin-top: 12px; }
+.extensions-group-title {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #8a8a92;
+  border-bottom: 1px solid #2c2c34;
+  padding-bottom: 4px;
+  margin: 14px 0 6px 0;
+}
+
+/* Two-column grid for extension flags. Each cell stacks the label and its
+   description vertically. Select-type flags (with a dropdown) span both
+   columns since the select element needs more room. Cells shrink to 1
+   column when the window is narrower than ~600 px. */
+.flag-grid {
+  display: grid;
+  /* 220px min lets two columns fit in the 560px-wide settings window
+     (≈500px content area after padding + scrollbar). At wider widths the
+     grid auto-expands; at narrower (e.g. someone resizes the window) it
+     falls back to 1 column cleanly. */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px 18px;
+  margin-top: 6px;
+}
+.flag-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* Each cell needs to be able to shrink for its description to wrap rather
+     than push the cell past the grid track width. */
+  min-width: 0;
+}
+.flag-cell-wide {
+  /* Span all columns — used for select-type flags whose dropdown is wide. */
+  grid-column: 1 / -1;
+}
+.flag-cell-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e8e8ec;
+  cursor: pointer;
+  font-size: 12px;
+  /* Prevent the label from being squeezed below its content width. */
+  min-width: 0;
+}
+.flag-cell-label input[type='checkbox'] {
+  flex: 0 0 auto;
+  margin: 0;
+}
+.flag-cell-label > span {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.flag-cell-select-label {
+  color: #b0b0b8;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+.flag-cell-select {
+  background: #25252c;
+  color: #e8e8ec;
+  border: 1px solid #3a3a44;
+  border-radius: 5px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  min-width: 0;
+  max-width: 100%;
+}
+.flag-cell-select:focus {
+  outline: none;
+  border-color: #5a83d1;
+}
+.flag-cell-desc {
+  /* Smaller, italic, indented under the checkbox aligned with the label. */
+  padding-left: 24px;
+  font-size: 11px;
+  color: #8a8a92;
+  font-style: italic;
+  line-height: 1.4;
+  min-width: 0;
+  word-break: break-word;
+}
+.flag-cell-wide .flag-cell-desc {
+  /* Select-type cells: no checkbox indent needed since there is no checkbox. */
+  padding-left: 0;
+}
+.row .ext-desc {
+  flex: 1 0 100%;
+  margin-top: 2px;
+  padding-left: 8px;
+  font-size: 11px;
+  color: #8a8a92;
+  font-style: italic;
+  /* Long descriptions must wrap, not blow up the row width. */
+  min-width: 0;
+  word-break: break-word;
+}
+/* Text-like inputs and selects need a readable min-width when sharing a row
+   with a label + description. Scope OFF of checkboxes/radios — those have
+   natural sizes and the previous rule was reserving a 200px-wide slot for
+   each checkbox, pushing their labels far to the right. */
+.row input:not([type='checkbox']):not([type='radio']),
+.row select {
+  flex: 1 1 200px;
+  min-width: 200px;
+  max-width: 100%;
+  background: #25252c;
+  color: #e8e8ec;
+  border: 1px solid #3a3a44;
+  border-radius: 5px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+}
+.row input[type='checkbox'],
+.row input[type='radio'] {
+  flex: 0 0 auto;
+  min-width: 0;
+  width: auto;
+}
+.row input:focus,
+.row select:focus {
+  outline: none;
+  border-color: #5a83d1;
+}
+.row .help {
+  background: transparent;
+  color: #5a83d1;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 11px;
+  text-decoration: underline;
+}
+.row .help:hover {
+  color: #7da3e8;
+}
+
+button.primary {
+  background: #5a83d1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 7px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+button.primary:hover {
+  background: #6e94de;
+}
+button.secondary {
+  background: transparent;
+  color: #b0b0b8;
+  border: 1px solid #3a3a44;
+  border-radius: 5px;
+  padding: 7px 14px;
+  font-size: 12px;
+  cursor: pointer;
+}
+button.secondary:hover {
+  background: #25252c;
+  color: #e8e8ec;
+}
+button.danger-link {
+  background: transparent;
+  border: none;
+  color: #d77b6b;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+}
+button.danger-link:hover {
+  color: #e89682;
+}
+
+.status {
+  font-size: 11px;
+  color: #888;
+  margin-top: 6px;
+  min-height: 14px;
+}
+.status.ok {
+  color: #6dca7e;
+}
+.status.warn {
+  color: #d77b6b;
+}
