@@ -1,6 +1,6 @@
-// Downloads original Saeed agent assets from the canonical clippyjs GitHub
+// Downloads original Merlin agent assets from the canonical clippyjs GitHub
 // (served via jsDelivr) and prepares tray/installer icons by cropping the
-// first 128x128 frame of the sprite sheet (Saeed's RestPose).
+// first 128x128 frame of the sprite sheet (Merlin's RestPose).
 //
 // Run with: npm run assets
 // Idempotent: skips download if a file already exists. Pass --force to re-fetch.
@@ -14,9 +14,9 @@ import pngToIco from 'png-to-ico';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 
-// All clippyjs characters. Saeed stays the icon source.
+// All clippyjs characters. Merlin stays the icon source.
 const CHARACTERS = [
-  'Saeed',
+  'Merlin',
   'Clippy',
   'Bonzi',
   'F1',
@@ -27,7 +27,7 @@ const CHARACTERS = [
   'Rocky',
   'Rover',
 ];
-const ICON_CHARACTER = 'Saeed';
+const ICON_CHARACTER = 'Merlin';
 const CDN = 'https://cdn.jsdelivr.net/gh/clippyjs/clippy.js@master/agents';
 const FILES = ['agent.js', 'map.png', 'sounds-mp3.js', 'sounds-ogg.js'];
 
