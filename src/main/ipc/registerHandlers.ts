@@ -12,7 +12,7 @@ import {
 } from '../windows/spriteWindow';
 import { hideBubble } from '../windows/bubbleWindow';
 import { closeSettingsWindow, openSettingsWindow } from '../windows/settingsWindow';
-import { buildMerlinMenu } from '../contextMenu';
+import { buildSaeedMenu } from '../contextMenu';
 import { openAskBubble, handleUserMessage } from '../interaction';
 import { read as readStore, write as writeStore, type StoreData } from '../storage/store';
 import {
@@ -84,7 +84,7 @@ export function registerIpcHandlers(): void {
     return {
       zoom: typeof s.zoom === 'number' ? s.zoom : 1.0,
       muteSounds: Boolean(s.muteSounds),
-      character: resolveSpriteId(s.character || 'Merlin'),
+      character: resolveSpriteId(s.character || 'Saeed'),
       appearance: s.appearance === 'retouched' ? 'retouched' as const : 'classic' as const,
       extensions: snapshotForRenderer(),
     };
@@ -99,8 +99,8 @@ export function registerIpcHandlers(): void {
     if (!sprite) return;
     const { reactToRightClick } = await import('../animationController');
     reactToRightClick();
-    const menu = await buildMerlinMenu({
-      askMerlin: () => openAskBubble(),
+    const menu = await buildSaeedMenu({
+      askSaeed: () => openAskBubble(),
     });
     menu.popup({ window: sprite });
   });
@@ -172,7 +172,7 @@ export function registerIpcHandlers(): void {
     await loadHistory();
     const settings = await readStore();
     const { resolveSpriteId } = await import('../customCharacters');
-    const character = resolveSpriteId(settings.character || 'Merlin');
+    const character = resolveSpriteId(settings.character || 'Saeed');
     const { stripAllTags } = await import('@shared/animation-protocol');
     // History was saved with raw [anim:...]/[feel:...]/[suggest:...] tags +
     // any italic action narration the model emitted. Strip both before
