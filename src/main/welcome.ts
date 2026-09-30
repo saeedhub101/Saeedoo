@@ -1,6 +1,6 @@
-import { IPC } from '@shared/ipc-contract';
 import { showBubble } from './windows/bubbleWindow';
 import { getSpriteWindow } from './windows/spriteWindow';
+import { characterController } from './character/CharacterController';
 import {
   getChatPanelWindow,
   panelAddIdleThought,
@@ -117,15 +117,10 @@ export async function playWelcome(): Promise<void> {
 
   const { bubble, spoken } = pickWelcome();
 
-  // Send Greet + Wave to whichever surface is the active sprite host.
-  // In modern mode that's the embedded clippyjs in the panel; in classic
-  // it's the floating sprite window.
-  const { getActiveSpriteHost } = await import('./activeSurface');
-  const host = await getActiveSpriteHost();
-  host?.webContents.send(IPC.spritePlay, 'Greet');
-  setTimeout(() => {
-    void getActiveSpriteHost().then((h) => h?.webContents.send(IPC.spritePlay, 'Wave'));
-  }, 1800);
+  // Welcome animation talks to the character boundary only.
+  // The renderer decides how Greet/Wave map to Saeed's native GLB clips.
+  await characterController.play('Greet');
+  setTimeout(() => { void characterController.play('Wave'); }, 1800);
   setTimeout(() => {
     if (settings.displayMode === 'modern') {
       // Modern mode: surface the welcome as an idle-thought turn in the panel
