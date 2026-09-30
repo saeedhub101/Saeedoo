@@ -1,0 +1,90 @@
+name: Saeed AI — Windows Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: saeedoo-windows-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    name: Build Windows x64
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate version
+        id: version
+        shell: pwsh
+        run: |
+          npm run check:version
+          $version = node -p "require('./package.json').version"
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Prepare Saeed 3D assets
+        run: npm run assets
+
+      - name: Verify source assets
+        run: npm run verify:assets
+
+      - name: Build application
+        run: npm run build
+
+      - name: Verify built assets
+        run: node scripts/verify-assets.mjs --build
+
+      - name: Package Windows x64
+        run: npx electron-builder --win nsis portable --publish never
+
+      - name: Verify packaged assets
+        run: node scripts/verify-assets.mjs --package
+
+      - name: Verify installer artifacts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $version = node -p "require('./package.json').version"
+          $nsis = "dist/Saeed-Setup.exe"
+          $portable = "dist/Saeed-Portable.exe"
+          if (!(Test-Path $nsis)) { throw "Missing NSIS artifact: $nsis" }
+          if (!(Test-Path $portable)) { throw "Missing portable artifact: $portable" }
+          Write-Host "Version: $version"
+          Write-Host "NSIS: $((Get-Item $nsis).Length) bytes"
+          Write-Host "Portable: $((Get-Item $portable).Length) bytes"
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Saeed-Windows-v${{ steps.version.outputs.version }}
+          path: |
+            dist/Saeed-Setup.exe
+            dist/Saeed-Portable.exe
+          if-no-files-found: error
+          retention-days: 14
