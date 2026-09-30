@@ -42,7 +42,7 @@ export type ExtensionGroup =
 // "none" is a common sentinel for "don't fire any animation".
 const NONE = { value: 'none', label: 'None (do nothing)' } as const;
 
-// Curated subset of clippyjs Saeed animations the user is likely to want as
+// Curated high-level animation intents available to Saeed. The 3D renderer maps these intents to native GLB clips.
 // drag start/end animations. Avoid the long *ing variants (Thinking 7.4s,
 // Reading 9.7s) — they'd overhang. Avoid Hide/Show — they affect visibility.
 const DRAG_START_ANIM_OPTIONS = [
@@ -261,7 +261,7 @@ export const EXTENSIONS_CATALOG: readonly ExtensionFlag[] = [
     key: 'behavior.voice.auto_mute_sfx_during_tts',
     group: 'Voice',
     label: 'Mute animation SFX while speaking',
-    description: 'Silences clippyjs animation sounds during TTS so they don\'t compete with the voice.',
+    description: 'Silences character animation sound effects during TTS so they don\'t compete with the voice.',
     default: true,
   },
 
