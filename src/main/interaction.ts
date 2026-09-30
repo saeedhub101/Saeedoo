@@ -473,7 +473,7 @@ async function streamFromProvider(): Promise<void> {
   }
 
   // Hold the 'speaking' state (and its gesture cycle) open until TTS audio
-  // has actually finished playing — otherwise Merlin freezes mid-sentence
+  // has actually finished playing — otherwise Saeed freezes mid-sentence
   // when the LLM stream completes before the last queued audio chunks have
   // played out. Two waits because synth and playback are independent: the
   // synth queue may still have sentences to render after the stream is done,
