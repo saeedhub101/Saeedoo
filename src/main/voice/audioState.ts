@@ -5,7 +5,7 @@ import { getChatPanelWindow } from '../windows/chatPanelWindow';
 
 // Tracks whether the sprite renderer is actively playing TTS audio. Updated
 // via IPC from sprite/main.ts whenever its audio queue transitions between
-// empty and active. Lets the chat-flow layer keep Merlin's 'speaking' state
+// empty and active. Lets the chat-flow layer keep Saeed's 'speaking' state
 // alive (and the speaking-gesture cycle running) until the audio actually
 // finishes — not just when the LLM stream completes.
 
