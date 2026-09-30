@@ -98,7 +98,7 @@ export async function checkForUpdate(): Promise<UpdateInfo | null> {
 /** Stream the installer to a temp file. Resolves with its path. */
 function downloadInstaller(onProgress?: (pct: number) => void): Promise<string> {
   return new Promise((resolve, reject) => {
-    mkdtemp(join(tmpdir(), 'merlin-update-'))
+    mkdtemp(join(tmpdir(), 'saeed-update-'))
       .then((dir) => {
         const dest = join(dir, 'Saeed-Setup.exe');
         const req = net.request({ url: INSTALLER_URL, redirect: 'follow' });
