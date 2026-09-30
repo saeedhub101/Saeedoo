@@ -22,7 +22,7 @@ export const BRAIN_CONTROLLERS: Readonly<Record<string, BrainControllerFactory>>
     id: 'local-llm',
     displayName: 'Local LLM (Ollama)',
     description:
-      'A local Ollama-hosted model decides what Merlin should do at each ' +
+      'A local Ollama-hosted model decides what Saeed should do at each ' +
       'idle tick. Coarse cadence (5 min between ticks); falls back to no-op ' +
       'silently if Ollama is unreachable or slow. Requires Ollama installed ' +
       'and a model pulled — run the Setup Wizard to get started.',
@@ -37,7 +37,7 @@ export const BRAIN_CONTROLLERS: Readonly<Record<string, BrainControllerFactory>>
     id: 'hermes',
     displayName: 'Hermes Agent (self-hosted)',
     description:
-      'A configured Hermes Agent profile decides what Merlin should do at ' +
+      'A configured Hermes Agent profile decides what Saeed should do at ' +
       'each idle tick. Uses the OpenAI-compatible chat completions API. ' +
       'Requires endpoint + API key — run the Setup Wizard.',
     configSchema: [
