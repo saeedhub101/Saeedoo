@@ -4,7 +4,9 @@ import { join } from 'node:path';
 import { CHARACTERS, type CharacterInfo } from '@shared/characters';
 import { logger } from './logger';
 
-// Custom characters are persona profiles only. The visual layer is always Saeed 3D.\n\nexport interface CustomCharacter extends CharacterInfo {
+// Custom characters are persona profiles only. The visual layer is always Saeed 3D.
+
+export interface CustomCharacter extends CharacterInfo {
   /** Legacy field accepted for migration; it no longer selects a visual asset. */
   baseCharacter?: string;
   /** Marker so callers know this came from disk. */
@@ -30,7 +32,9 @@ async function readOne(path: string): Promise<CustomCharacter | null> {
       return null;
     }
     return {
-      id, displayName, personaHint,
+      id,
+      displayName,
+      personaHint,
       description: typeof raw.description === 'string' ? raw.description : displayName,
       ...(baseCharacter ? { baseCharacter } : {}),
       custom: true,
