@@ -40,9 +40,9 @@ export interface StoreData {
   screenshotHotkey: string;
   /** Enable/disable the screenshot hotkey. */
   screenshotHotkeyEnabled: boolean;
-  /** 'classic' (floating bubble) | 'modern' (panel with embedded sprite + thread) */
+  /** 'classic' (floating bubble) | 'modern' (panel + standalone Saeed window) */
   displayMode: 'classic' | 'modern';
-  /** 'classic' (pixelated retro sprites) | 'retouched' (CSS-smoothed for modern feel) */
+  /** Legacy appearance preference retained for settings migration. The visual is now 3D. */
   appearance: 'classic' | 'retouched';
   /** Per-behavior feature flags (0.4.0+). Keyed by extension flag id (e.g. */
   /** `behavior.drag.sway`). Missing key = use default from extensions catalog. */
