@@ -37,7 +37,7 @@ export function createChatPanelWindow(): BrowserWindow {
   if (panelWindow && !panelWindow.isDestroyed()) return panelWindow;
 
   // Anchor to the bottom-right corner of the primary display by default.
-  // positionPanelRelativeToSprite() will move us alongside Merlin as soon as
+  // positionPanelRelativeToSprite() will move us alongside Saeed as soon as
   // the panel is shown.
   const primary = screen.getPrimaryDisplay();
   const { workArea } = primary;
@@ -108,7 +108,7 @@ export function createChatPanelWindow(): BrowserWindow {
   (panelWindow.webContents as any).on(
     'console-message',
     (_e: unknown, _level: number, message: string) => {
-      if (typeof message === 'string' && message.includes('[merlin-')) {
+      if (typeof message === 'string' && message.includes('[saeed-')) {
         logger.info('[panel-console]', message);
       }
     },
@@ -125,7 +125,7 @@ export function showChatPanel(): void {
   const w = createChatPanelWindow();
   const reveal = (): void => {
     w.show();
-    // Position next to Merlin now that the sprite is visible.
+    // Position next to Saeed now that the sprite is visible.
     positionPanelRelativeToSprite();
     syncPanelTailSide();
   };
@@ -193,7 +193,7 @@ export function panelAddIdleThought(thought: PanelIdleThought): void {
   panelWindow?.webContents.send(IPC.panelAddIdleThought, thought);
 }
 
-/** Position the panel alongside Merlin — to his left by default, flipped to */
+/** Position the panel alongside Saeed — to his left by default, flipped to */
 /** the right if it would land off-screen. Clamped vertically to the work */
 /** area. Called on first show and on display-mode toggle to modern. */
 export function positionPanelRelativeToSprite(): void {
@@ -271,7 +271,7 @@ export function programmaticSetPanelPosition(x: number, y: number): void {
 
 /** Compute tail placement: pick the panel edge closest to the sprite (left/ */
 /** right/top/bottom) and the offset along that edge so the tail actually */
-/** points at Merlin's center. Same logic as the bubble. */
+/** points at Saeed's center. Same logic as the bubble. */
 function computePanelTailPlacement(): TailPlacement {
   const w = panelWindow;
   const sprite = getSpriteWindow();
