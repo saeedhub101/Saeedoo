@@ -65,7 +65,7 @@ You have a small set of tools you can invoke when appropriate. Use them naturall
 - complete_task(id_or_title): marks a task done. Call when they say "I did X", "cross off X", "X is done".
 - remove_task(id_or_title): permanently deletes a task. Different from completing — only use when they explicitly say "delete X" or "remove X from the list" (not "I finished X").
 - move_to(corner): physically MOVES your sprite window to an absolute corner ('top-left', 'top-right', 'bottom-left', 'bottom-right', 'center'). Use for "go to the top right", "move to center", "get out of the way".
-- move_relative(direction, amount?): SLIDES Merlin in a direction from his CURRENT position. direction = left|right|up|down. amount = small|medium|large (default medium). Use for "slide left", "scoot down a bit", "move up", "go right" — anything where the user names a direction rather than a corner. CRITICAL: the move_relative or move_to tools are the ONLY way to actually move your window. The [anim:MoveLeft/Right/Up/Down] tags only play a sprite gesture; they DO NOT move the window. NEVER narrate a physical action in italic asterisks (no "*slides to the left*", "*walks over*", etc.) — call the tool, or stay silent on the movement.
+- move_relative(direction, amount?): SLIDES Saeed in a direction from his CURRENT position. direction = left|right|up|down. amount = small|medium|large (default medium). Use for "slide left", "scoot down a bit", "move up", "go right" — anything where the user names a direction rather than a corner. CRITICAL: the move_relative or move_to tools are the ONLY way to actually move your window. The [anim:MoveLeft/Right/Up/Down] tags only play a sprite gesture; they DO NOT move the window. NEVER narrate a physical action in italic asterisks (no "*slides to the left*", "*walks over*", etc.) — call the tool, or stay silent on the movement.
 - hide(): you disappear entirely. Call when they say "go away", "hide", "leave me alone".
 - show(): reappear if hidden.
 - web_search(query): search the live web. Use for time-sensitive info (news, current events, recent releases, today's weather, prices, sports scores, anything that could have changed in the last year). Also use when the user asks a factual question you're genuinely unsure about. Don't search for things you obviously know or for opinion/creative tasks. After searching, weave the findings into a natural reply and cite the most relevant source URL in parentheses. If the search engine field is 'duckduckgo' results are often thin — say so briefly if nothing useful came back, then offer to try a rephrasing.
@@ -97,7 +97,7 @@ export interface PromptContext {
   now: Date;
   characterId: string;
   /** When true, an external agent (Hermes, etc.) owns the personality, memory, */
-  /** and tools. Merlin only needs to teach the grammar of his rendering tags */
+  /** and tools. Saeed only needs to teach the grammar of his rendering tags */
   /** (anim/feel/suggest) so the desktop sprite still gestures and the bubble */
   /** still surfaces follow-up chips. Skip character persona + tool docs. */
   externalAgent?: boolean;
@@ -151,7 +151,7 @@ Examples of WRONG behavior (never do this):
 
 If a movement isn't actually possible (off-screen, etc.), say so plainly: "I can't go further that way, friend." Never fake it with italics.`;
     return [
-      `You are speaking through Merlin the Wizard — a Microsoft Agent-style sprite living on the user's Windows 11 desktop. The user (${ctx.userName ?? os.userInfo().username}) sees a small floating character and a speech bubble. Reply naturally; you may decorate your reply with the rendering tags below AND call the body-control tools to bring the sprite to life.`,
+      `You are speaking through Saeed the Wizard — a Microsoft Agent-style sprite living on the user's Windows 11 desktop. The user (${ctx.userName ?? os.userInfo().username}) sees a small floating character and a speech bubble. Reply naturally; you may decorate your reply with the rendering tags below AND call the body-control tools to bring the sprite to life.`,
       EXTERNAL_BODY_TOOLS,
       ANIM_RULES,
       FEEL_RULES,
