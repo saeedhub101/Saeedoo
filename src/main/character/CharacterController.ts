@@ -15,6 +15,9 @@ import {
  * Brain, tools and voice talk to this controller instead of knowing whether
  * the visual implementation is Clippy, Three.js, or another renderer.
  */
+const HIDE_ANIMATION_MS = 2200;
+const SHOW_ANIMATION_MS = 1500;
+
 export const characterController = {
   async play(name: AnimationName): Promise<void> {
     const window = getSpriteWindow() ?? (await createSpriteWindow());
@@ -25,11 +28,19 @@ export const characterController = {
     getSpriteWindow()?.webContents.send(IPC.spriteStop);
   },
 
-  show(): void {
-    showSprite();
+  async show(): Promise<void> {
+    const window = getSpriteWindow() ?? await createSpriteWindow();
+    if (!window.isVisible()) window.show();
+    await new Promise<void>((resolve) => setTimeout(resolve, 60));
+    window.webContents.send(IPC.spritePlay, 'Show');
+    await new Promise<void>((resolve) => setTimeout(resolve, SHOW_ANIMATION_MS));
   },
 
-  hide(): void {
+  async hide(): Promise<void> {
+    const window = getSpriteWindow();
+    if (!window || !window.isVisible()) return;
+    window.webContents.send(IPC.spritePlay, 'Hide');
+    await new Promise<void>((resolve) => setTimeout(resolve, HIDE_ANIMATION_MS));
     hideSprite();
   },
 
