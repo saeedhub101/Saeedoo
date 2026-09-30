@@ -23,7 +23,7 @@ interface DraftAttachment {
 }
 
 function App(): React.ReactElement {
-  const [character, setCharacter] = useState('Merlin');
+  const [character, setCharacter] = useState('Saeed');
   const [turns, setTurns] = useState<PanelChatTurn[]>([]);
   const [streaming, setStreaming] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -135,7 +135,7 @@ function App(): React.ReactElement {
     const offStreaming = api.onSetStreaming((s: boolean) => {
       setStreaming(s);
       if (s) {
-        // Adding a placeholder turn so the "Merlin is thinking" indicator shows
+        // Adding a placeholder turn so the "Saeed is thinking" indicator shows
         setTurns((prev) => {
           const last = prev[prev.length - 1];
           if (last && last.role === 'assistant' && last.streaming) return prev;
@@ -167,7 +167,7 @@ function App(): React.ReactElement {
     const offTail = api.onSetTailSide((placement) => {
       // Same tail-positioning protocol as the speech bubble — the dataset
       // attribute picks which CSS rules apply (which edge sticks out) and
-      // the CSS variable slides the tail along that edge so it tracks Merlin
+      // the CSS variable slides the tail along that edge so it tracks Saeed
       // when he isn't aligned with the panel's midpoint.
       document.body.dataset.tail = placement.side;
       document.body.style.setProperty('--tail-offset', String(placement.offset));
@@ -285,7 +285,7 @@ function App(): React.ReactElement {
       mr.start();
       setRecording(true);
     } catch (err) {
-      console.warn('[merlin-panel] mic access failed', err);
+      console.warn('[saeed-panel] mic access failed', err);
       setRecording(false);
     }
   };
@@ -320,7 +320,7 @@ function App(): React.ReactElement {
   return (
     <div className="app">
       {/* The .panel is the visible dark surface — outer window is transparent
-          so the .panel-tail can stick out past it toward Merlin. Same shape
+          so the .panel-tail can stick out past it toward Saeed. Same shape
           as the speech bubble, just bigger and themed dark. */}
       <div className="panel-tail" aria-hidden="true" />
       <div className="titlebar">
@@ -494,7 +494,7 @@ function App(): React.ReactElement {
           <textarea
             ref={inputRef}
             value={input}
-            placeholder="Ask Merlin... (Shift+Enter for newline)"
+            placeholder="Ask Saeed... (Shift+Enter for newline)"
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             rows={1}
