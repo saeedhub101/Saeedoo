@@ -26,9 +26,9 @@ export interface StoreData {
   hermesProfiles: Array<{ name: string; url: string }>;
   /** Avatar character to use (clippyjs agent name). */
   character: string;
-  /** Global hotkey to summon Merlin (Electron Accelerator string). */
+  /** Global hotkey to summon Saeed (Electron Accelerator string). */
   summonHotkey: string;
-  /** Start Merlin automatically when Windows starts. */
+  /** Start Saeed automatically when Windows starts. */
   autoStart: boolean;
   /** Brain occasionally surfaces an unprompted thought when user is idle. */
   idleThoughtsEnabled: boolean;
@@ -72,7 +72,7 @@ const DEFAULTS: StoreData = {
   ollamaEndpoint: 'http://localhost:11434/api',
   hermesEndpoint: '',
   hermesProfiles: [],
-  character: 'Merlin',
+  character: 'Saeed',
   summonHotkey: 'Control+Shift+M',
   autoStart: false,
   idleThoughtsEnabled: true,
