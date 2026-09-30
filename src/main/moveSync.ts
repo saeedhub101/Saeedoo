@@ -160,7 +160,7 @@ export function attachSpriteMoveSync(sprite: BrowserWindow): void {
     }
   });
 
-  // Panel drag → sprite follows (just like bubble drag). Keeps Merlin and his
+  // Panel drag → sprite follows (just like bubble drag). Keeps Saeed and his
   // chat surface glued together so the user can reposition the whole cluster
   // by grabbing either window.
   setOnPanelUserMove(() => {
@@ -252,7 +252,7 @@ function keepBubbleInBounds(): void {
 
 /** Mirrors keepBubbleInBounds for the chat panel. The panel is much larger
  *  than the bubble, so the flip-to-other-side heuristic matters more — when
- *  Merlin gets dragged to a screen corner, the panel almost always needs to
+ *  Saeed gets dragged to a screen corner, the panel almost always needs to
  *  swap sides to stay visible. */
 function keepPanelInBounds(): void {
   const panel = getChatPanelWindow();
