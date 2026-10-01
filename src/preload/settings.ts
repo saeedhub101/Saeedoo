@@ -6,6 +6,7 @@ import {
   type StoreSnapshot,
   type ProviderInfoForUi,
   type SapiVoiceForUi,
+  type ApiStatusResult,
 } from '@shared/ipc-contract';
 
 const api: SettingsApi = {
@@ -16,6 +17,10 @@ const api: SettingsApi = {
     ipcRenderer.invoke(IPC.settingsGetProviderInfo) as Promise<ProviderInfoForUi[]>,
   getSapiVoices: () =>
     ipcRenderer.invoke(IPC.settingsGetSapiVoices) as Promise<SapiVoiceForUi[]>,
+  testApi: (service: ApiStatusResult['service']) =>
+    ipcRenderer.invoke(IPC.settingsTestApi, service) as Promise<ApiStatusResult>,
+  testAllApis: () =>
+    ipcRenderer.invoke(IPC.settingsTestAllApis) as Promise<ApiStatusResult[]>,
   setSecret: (name, key) =>
     ipcRenderer.invoke(IPC.secretsSet, name, key) as Promise<void>,
   hasSecret: (name) =>
