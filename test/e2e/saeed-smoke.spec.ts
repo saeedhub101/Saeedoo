@@ -63,6 +63,46 @@ test.describe('Saeed Windows runtime smoke suite', () => {
     await expect(panel.locator('.turn.user')).toContainText('Smoke test message');
   });
 
+  test('LLM: provider registry and chat stream path are reachable', async () => {
+    const result = await app.evaluate(async () => {
+      const { createRequire } = process.getBuiltinModule('module') as typeof import('node:module');
+      const require = createRequire(process.cwd() + '/test/e2e/saeed-smoke.spec.ts');
+      const llm = require(process.cwd() + '/out/main/llm/providerRegistry.js') as {
+        PROVIDERS: Record<string, { defaultModel: string }>;
+        isLLMConfigured: () => Promise<boolean>;
+        streamChat: (opts: { history: Array<{ role: 'user' | 'assistant'; content: string }> }) => AsyncGenerator<string>;
+      };
+      const providers = Object.keys(llm.PROVIDERS);
+      const configured = await llm.isLLMConfigured();
+      let chunks = 0;
+      let error = '';
+      if (configured) {
+        try {
+          for await (const chunk of llm.streamChat({
+            history: [{ role: 'user', content: 'Reply with exactly: LLM smoke test OK' }],
+          })) {
+            if (chunk.trim()) chunks += 1;
+            if (chunks >= 3) break;
+          }
+        } catch (e) {
+          error = e instanceof Error ? e.message : String(e);
+        }
+      }
+      return {
+        providers,
+        configured,
+        chunks,
+        error,
+        valid: providers.length >= 3 && providers.every((id) => Boolean(llm.PROVIDERS[id]?.defaultModel)),
+      };
+    });
+    expect(result.valid).toBe(true);
+    if (result.configured) {
+      expect(result.error).toBe('');
+      expect(result.chunks).toBeGreaterThan(0);
+    }
+  });
+
   test('IDLE: autonomous thought pipeline can emit a thought without crashing', async () => {
     const emitted = await app.evaluate(async () => {
       const { createRequire } = process.getBuiltinModule('module') as typeof import('node:module');
