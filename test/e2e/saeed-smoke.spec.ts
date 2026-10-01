@@ -73,7 +73,7 @@ test.describe('Saeed Windows runtime smoke suite', () => {
         isLLMConfigured: () => Promise<boolean>;
         streamChat: (opts: { history: Array<{ role: 'user' | 'assistant'; content: string }> }) => AsyncGenerator<string>;
       };
-      const providers = Object.keys(mod.PROVIDERS);
+      const providers = Object.keys(mod.PROVIDERS);\n      const defaults = Object.fromEntries(providers.map((id) => [id, mod.PROVIDERS[id]?.defaultModel ?? '']));
       const configured = await mod.isLLMConfigured();
       let chunks = 0;
       let error = '';
@@ -89,11 +89,11 @@ test.describe('Saeed Windows runtime smoke suite', () => {
           error = e instanceof Error ? e.message : String(e);
         }
       }
-      return { providers, configured, chunks, error };
+      return { providers, defaults, configured, chunks, error };
     }, { llmPath: process.cwd() + '/out/main/llm/providerRegistry.js' });
 
     expect(result.providers.length).toBeGreaterThanOrEqual(3);
-    expect(result.providers.every((id) => typeof id === 'string' && id.length > 0)).toBe(true);
+    expect(result.providers.every((id) => typeof id === 'string' && id.length > 0 && Boolean(result.defaults[id]))).toBe(true);
     if (result.configured) {
       expect(result.error).toBe('');
       expect(result.chunks).toBeGreaterThan(0);
