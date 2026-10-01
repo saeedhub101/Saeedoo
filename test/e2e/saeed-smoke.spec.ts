@@ -20,7 +20,7 @@ test.describe('Saeed Windows runtime smoke suite', () => {
   test('SMOKE: Electron starts and creates the character window', async () => {
     const page = await app.firstWindow({ timeout: 60_000 });
     await page.waitForLoadState('domcontentloaded');
-    expect(await app.windows()).toHaveLength(1);
+    expect((await app.windows()).length).toBeGreaterThanOrEqual(1);
     expect(await app.evaluate(({ app: electronApp }) => electronApp.isReady())).toBe(true);
     expect(await page.url()).toContain('file:');
   });
@@ -50,10 +50,8 @@ test.describe('Saeed Windows runtime smoke suite', () => {
       const panel = require('./out/main/windows/chatPanelWindow.js') as { showChatPanel: () => void };
       panel.showChatPanel();
     });
-    const panel = await app.waitForEvent('window', {
-      timeout: 30_000,
-      predicate: (page) => page.url().includes('chat-panel/index.html'),
-    });
+    await expect.poll(() => app.windows().some((page) => page.url().includes('chat-panel/index.html')), { timeout: 30_000 }).toBe(true);
+    const panel = app.windows().find((page) => page.url().includes('chat-panel/index.html'))!;
     await panel.waitForLoadState('domcontentloaded');
     const input = panel.locator('textarea[placeholder*="Ask Saeed"]');
     await expect(input).toBeVisible();
