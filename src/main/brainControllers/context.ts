@@ -28,6 +28,7 @@ import { read as readStore } from '../storage/store';
 import { listTasks } from '../tasks';
 import { getMood } from '../feelings';
 import { isEnabled, isOverridable } from '../extensions';
+import { speak as ttsSpeak } from '../voice/tts';
 import { logger } from '../logger';
 import { screen } from 'electron';
 
@@ -133,6 +134,9 @@ export function buildBrainContext(): BrainContext {
         if (bubble && bubble.isVisible()) return; // don't interrupt
         showBubble(text, { mode: 'read', durationMs: 9_000 });
       }
+      // Idle thoughts use the same TTS pipeline as normal assistant speech.
+      // Keep the existing bubble/panel behavior intact; this only adds voice.
+      await ttsSpeak(text);
     },
     playAnimation(name: AnimationName): void {
       anim_playInline(name);
