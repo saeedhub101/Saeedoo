@@ -6,6 +6,7 @@ directories:
   buildResources: resources
 files:
   - out/**/*
+  - out/renderer/characters/Saeed.glb
   - resources/**/*
   - package.json
 asar: true
