@@ -24,7 +24,7 @@ export async function transcribeAudio(
     if (!warnedNoKey && Notification.isSupported()) {
       warnedNoKey = true;
       new Notification({
-        title: 'Merlin: Voice input needs a Groq key',
+        title: 'Saeed: Voice input needs a Groq key',
         body: 'Whisper transcription uses your Groq API key. Add it in Settings → Groq.',
         silent: true,
       }).show();
