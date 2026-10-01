@@ -80,6 +80,8 @@ export const IPC = {
   settingsGet: 'settings:get',
   settingsSet: 'settings:set',
   settingsGetProviderInfo: 'settings:getProviderInfo',
+  settingsTestApi: 'settings:testApi',
+  settingsTestAllApis: 'settings:testAllApis',
   settingsGetSapiVoices: 'settings:getSapiVoices',
   settingsOpen: 'settings:open',
   settingsClose: 'settings:close',
@@ -334,10 +336,23 @@ export interface SapiVoiceForUi {
   culture: string;
 }
 
+export interface ApiStatusResult {
+  service: 'brain' | 'tts' | 'stt' | 'realtime';
+  connected: boolean;
+  provider: string;
+  model: string;
+  endpoint: string;
+  latencyMs?: number;
+  detail: string;
+  test: string;
+}
+
 export interface SettingsApi {
   get: () => Promise<StoreSnapshot>;
   set: (patch: Partial<StoreSnapshot>) => Promise<StoreSnapshot>;
   getProviders: () => Promise<ProviderInfoForUi[]>;
+  testApi: (service: ApiStatusResult['service']) => Promise<ApiStatusResult>;
+  testAllApis: () => Promise<ApiStatusResult[]>;
   getSapiVoices: () => Promise<SapiVoiceForUi[]>;
   setSecret: (name: string, key: string) => Promise<void>;
   hasSecret: (name: string) => Promise<boolean>;
