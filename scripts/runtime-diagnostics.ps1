@@ -17,6 +17,7 @@ $proc = Start-Process -FilePath $electron -ArgumentList @("--user-data-dir=$user
 try {
   Start-Sleep -Seconds 5
   $samples = @()
+  $previousCpu = @{}
   $logical = [Environment]::ProcessorCount
   $end = (Get-Date).AddSeconds($DurationSeconds)
 
@@ -36,10 +37,20 @@ try {
       elseif ($p.CommandLine -match "--type=gpu-process") { $type = "gpu-process" }
       elseif ($p.CommandLine -match "--type=utility") { $type = "utility" }
       elseif ($p.CommandLine -match "--type=crashpad-handler") { $type = "crashpad" }
+      $pid = [int]$p.ProcessId
+      $cpuSeconds = [double]$gp.CPU
+      $cpuPercent = $null
+      if ($previousCpu.ContainsKey($pid)) {
+        $deltaCpu = $cpuSeconds - [double]$previousCpu[$pid].cpu
+        $deltaTime = ((Get-Date) - $previousCpu[$pid].time).TotalSeconds
+        if ($deltaTime -gt 0) { $cpuPercent = [math]::Round(($deltaCpu / $deltaTime / $logical) * 100, 2) }
+      }
+      $previousCpu[$pid] = @{ cpu = $cpuSeconds; time = Get-Date }
       $rows += [pscustomobject]@{
-        pid = [int]$p.ProcessId
+        pid = $pid
         type = $type
-        cpuSeconds = [double]$gp.CPU
+        cpuSeconds = $cpuSeconds
+        cpuPercent = $cpuPercent
         workingSetMB = [math]::Round($gp.WorkingSet64 / 1MB, 2)
         privateMB = [math]::Round($gp.PrivateMemorySize64 / 1MB, 2)
       }
@@ -79,6 +90,8 @@ try {
         maxRamMB = [math]::Round((($items | Measure-Object workingSetMB -Maximum).Maximum), 2)
         avgRamMB = [math]::Round((($items | Measure-Object workingSetMB -Average).Average), 2)
         peakPrivateMB = [math]::Round((($items | Measure-Object privateMB -Maximum).Maximum), 2)
+        avgCpuPercent = if (@($items | Where-Object { $null -ne $_.cpuPercent }).Count) { [math]::Round((($items | Where-Object { $null -ne $_.cpuPercent } | Measure-Object cpuPercent -Average).Average), 2) } else { $null }
+        peakCpuPercent = if (@($items | Where-Object { $null -ne $_.cpuPercent }).Count) { [math]::Round((($items | Where-Object { $null -ne $_.cpuPercent } | Measure-Object cpuPercent -Maximum).Maximum), 2) } else { $null }
       }
     }
   }
