@@ -47,7 +47,9 @@ test.describe('Saeed Windows runtime smoke suite', () => {
   test('CHAT: chat panel opens and accepts a user message', async () => {
     await app.evaluate(() => {
       // Test-only access to the existing window module; no production API is changed.
-      const panel = require('./out/main/windows/chatPanelWindow.js') as { showChatPanel: () => void };
+      const { createRequire } = process.getBuiltinModule('module') as typeof import('node:module');
+      const require = createRequire(process.cwd() + '/test/e2e/saeed-smoke.spec.ts');
+      const panel = require(process.cwd() + '/out/main/windows/chatPanelWindow.js') as { showChatPanel: () => void };
       panel.showChatPanel();
     });
     await expect.poll(() => app.windows().some((page) => page.url().includes('chat-panel/index.html')), { timeout: 30_000 }).toBe(true);
@@ -63,7 +65,9 @@ test.describe('Saeed Windows runtime smoke suite', () => {
 
   test('IDLE: autonomous thought pipeline can emit a thought without crashing', async () => {
     const emitted = await app.evaluate(async () => {
-      const { buildBrainContext } = require('./out/main/brainControllers/context.js') as {
+      const { createRequire } = process.getBuiltinModule('module') as typeof import('node:module');
+      const require = createRequire(process.cwd() + '/test/e2e/saeed-smoke.spec.ts');
+      const { buildBrainContext } = require(process.cwd() + '/out/main/brainControllers/context.js') as {
         buildBrainContext: () => { emitIdleThought: (text: string) => Promise<void> };
       };
       try {
