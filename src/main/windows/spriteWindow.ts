@@ -115,19 +115,38 @@ export async function createSpriteWindow(): Promise<BrowserWindow> {
     if (onUserMoveCallback) onUserMoveCallback();
   });
 
-  if (process.env.ELECTRON_RENDERER_URL) {
-    void spriteWindow.loadURL(`${process.env.ELECTRON_RENDERER_URL}/sprite/index.html`);
-  } else {
-    void spriteWindow.loadFile(join(__dirname, '../renderer/sprite/index.html'));
-  }
+  let shown = false;
+  const reveal = (reason: string): void => {
+    if (shown || !spriteWindow || spriteWindow.isDestroyed()) return;
+    shown = true;
+    spriteWindow.show();
+    logger.info('3D character window shown', { reason, x, y, w, h, zoom });
+  };
 
-  spriteWindow.once('ready-to-show', () => {
-    spriteWindow?.show();
-    // Initial state is pulled by the renderer via getInitial once its IPC
-    // handlers are wired — avoids races where we push before listeners exist.
-    logger.info('3D character window shown', { x, y, w, h, zoom });
+  spriteWindow.webContents.once('did-finish-load', () => reveal('did-finish-load'));
+  spriteWindow.webContents.once('did-fail-load', (_event, errorCode, errorDescription) => {
+    logger.error('Sprite renderer failed to load:', errorCode, errorDescription);
+    // Keep the application window visible even when the renderer asset fails.
+    reveal('did-fail-load');
   });
 
+  if (process.env.ELECTRON_RENDERER_URL) {
+    void spriteWindow.loadURL(`${process.env.ELECTRON_RENDERER_URL}/sprite/index.html`)
+      .catch((err) => {
+        logger.error('Sprite loadURL failed:', err);
+        reveal('loadURL-error');
+      });
+  } else {
+    void spriteWindow.loadFile(join(__dirname, '../renderer/sprite/index.html'))
+      .catch((err) => {
+        logger.error('Sprite loadFile failed:', err);
+        reveal('loadFile-error');
+      });
+  }
+
+  // ready-to-show can be delayed by GPU/WebGL initialization. Never make the
+  // application's visibility depend on that event.
+  setTimeout(() => reveal('visibility-timeout'), 2500);
   spriteWindow.on('closed', () => {
     spriteWindow = null;
   });
