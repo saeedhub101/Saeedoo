@@ -53,17 +53,26 @@ app.whenReady().then(async () => {
   logger.info('Saeed starting');
   logger.info('.env load result:', envResult);
 
-  // IPC must be registered before createSpriteWindow so renderer IPC requests
-  // cannot race the initial page load.
-  const { registerIpcHandlers } = await import('./ipc/registerHandlers');
+  // Create the first visible window before loading the large IPC dependency
+  // graph. registerHandlers imports voice/LLM/brain/settings modules; any
+  // module-init failure there must never prevent the character window from
+  // existing.
   const { createSpriteWindow, getSpriteWindow, setOnZoomChanged } =
     await import('./windows/spriteWindow');
-  registerIpcHandlers();
 
   // FIRST APPLICATION WINDOW: no brain/voice/tray/custom-character loading
   // is allowed before this call.
   const sprite = await createSpriteWindow();
   logger.info('Saeed sprite window created; continuing startup');
+
+  // The sprite renderer does not require these handlers to create the window.
+  // Register them immediately after the window exists.
+  try {
+    const { registerIpcHandlers } = await import('./ipc/registerHandlers');
+    registerIpcHandlers();
+  } catch (err) {
+    logger.error('IPC registration failed; Saeed window remains available:', err);
+  }
 
   try {
     const { read: readStore } = await import('./storage/store');
