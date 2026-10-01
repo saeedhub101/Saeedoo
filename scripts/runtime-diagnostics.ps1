@@ -37,17 +37,17 @@ try {
       elseif ($p.CommandLine -match "--type=gpu-process") { $type = "gpu-process" }
       elseif ($p.CommandLine -match "--type=utility") { $type = "utility" }
       elseif ($p.CommandLine -match "--type=crashpad-handler") { $type = "crashpad" }
-      $pid = [int]$p.ProcessId
+      $processId = [int]$p.ProcessId
       $cpuSeconds = [double]$gp.CPU
       $cpuPercent = $null
-      if ($previousCpu.ContainsKey($pid)) {
-        $deltaCpu = $cpuSeconds - [double]$previousCpu[$pid].cpu
-        $deltaTime = ((Get-Date) - $previousCpu[$pid].time).TotalSeconds
+      if ($previousCpu.ContainsKey($processId)) {
+        $deltaCpu = $cpuSeconds - [double]$previousCpu[$processId].cpu
+        $deltaTime = ((Get-Date) - $previousCpu[$processId].time).TotalSeconds
         if ($deltaTime -gt 0) { $cpuPercent = [math]::Round(($deltaCpu / $deltaTime / $logical) * 100, 2) }
       }
-      $previousCpu[$pid] = @{ cpu = $cpuSeconds; time = Get-Date }
+      $previousCpu[$processId] = @{ cpu = $cpuSeconds; time = Get-Date }
       $rows += [pscustomobject]@{
-        pid = $pid
+        pid = $processId
         type = $type
         cpuSeconds = $cpuSeconds
         cpuPercent = $cpuPercent
