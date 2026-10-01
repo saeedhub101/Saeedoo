@@ -64,7 +64,7 @@ function notifyVoiceFailure(voiceId: string, status: number, body: string): void
   if (Notification.isSupported()) {
     // `silent: false` so Windows Focus Assist doesn't filter it out.
     new Notification({
-      title: 'Merlin: ElevenLabs voice failed',
+      title: 'Saeed: ElevenLabs voice failed',
       body: `HTTP ${status} for voice ${voiceId.slice(0, 12)}...${hint}`,
       silent: false,
     }).show();
@@ -112,7 +112,7 @@ export async function synthesizeElevenLabs(
           warnedAuthFailure = true;
           if (Notification.isSupported()) {
             new Notification({
-              title: 'Merlin: ElevenLabs unauthorized',
+              title: 'Saeed: ElevenLabs unauthorized',
               body: 'API key is invalid or missing required permissions.',
               silent: true,
             }).show();
@@ -153,7 +153,7 @@ export async function synthesizeElevenLabs(
       warnedGeneric = true;
       if (Notification.isSupported()) {
         new Notification({
-          title: 'Merlin: ElevenLabs network error',
+          title: 'Saeed: ElevenLabs network error',
           body: 'Failed to reach api.elevenlabs.io. Check your connection.',
           silent: true,
         }).show();
