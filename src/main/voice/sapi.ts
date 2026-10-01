@@ -100,7 +100,7 @@ export async function synthesizeSapi(
   }
   const tmp = join(
     os.tmpdir(),
-    `merlin-sapi-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.wav`,
+    `saeed-sapi-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.wav`,
   );
   // PowerShell reads the text from stdin (handles apostrophes, quotes, unicode
   // without escaping). Writes wav to a temp file then exits.
