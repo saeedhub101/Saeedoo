@@ -13,6 +13,7 @@ asar: true
 asarUnpack:
   - resources/models/**
   - node_modules/@xenova/**
+  - out/renderer/characters/Saeed.glb
 win:
   target:
     - target: nsis
