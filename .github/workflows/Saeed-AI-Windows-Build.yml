@@ -60,6 +60,13 @@ jobs:
       - name: Verify built assets
         run: node scripts/verify-assets.mjs --build
 
+      - name: End-to-end smoke tests
+        run: npx playwright test
+
+      - name: CPU RAM GPU runtime diagnostics
+        shell: pwsh
+        run: .\\scripts\\runtime-diagnostics.ps1 -DurationSeconds 20 -ReportPath ci-runtime-report.json
+
       - name: Package Windows x64
         run: npx electron-builder --win nsis portable --publish never
 
@@ -86,5 +93,6 @@ jobs:
           path: |
             dist/Saeed-Setup.exe
             dist/Saeed-Portable.exe
+            ci-runtime-report.json
           if-no-files-found: error
           retention-days: 14
