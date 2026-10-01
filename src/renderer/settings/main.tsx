@@ -5,6 +5,7 @@ import type {
   ProviderInfoForUi,
   StoreSnapshot,
   SapiVoiceForUi,
+  type ApiStatusResult,
 } from '@shared/ipc-contract';
 import { EDGE_VOICES } from '@shared/edge-voices';
 import { EXTENSIONS_CATALOG } from '@shared/extensions-catalog';
@@ -33,6 +34,74 @@ const ELEVENLABS_PRESETS: ReadonlyArray<{ id: string; label: string }> = [
   { id: 'yoZ06aMxZJJ28mfd3POQ', label: 'Sam — raspy male' },
 ];
 const ELEVENLABS_PRESET_IDS = new Set(ELEVENLABS_PRESETS.map((v) => v.id));
+
+function ApiStatusPanel(): React.ReactElement {
+  const [results, setResults] = useState<ApiStatusResult[]>([]);
+  const [busy, setBusy] = useState(false);
+
+  const testAll = async (): Promise<void> => {
+    if (!api) return;
+    setBusy(true);
+    try { setResults(await api.testAllApis()); }
+    catch (err) {
+      setResults([{
+        service: 'brain', connected: false, provider: 'Status test', model: '—',
+        endpoint: '—', detail: err instanceof Error ? err.message : String(err), test: 'IPC test',
+      }]);
+    } finally { setBusy(false); }
+  };
+
+  const testOne = async (service: ApiStatusResult['service']): Promise<void> => {
+    if (!api) return;
+    setBusy(true);
+    try {
+      const result = await api.testApi(service);
+      setResults((prev) => [...prev.filter((x) => x.service !== service), result]);
+    } finally { setBusy(false); }
+  };
+
+  const label = (service: ApiStatusResult['service']): string =>
+    service === 'brain' ? 'Brain API' : service === 'tts' ? 'TTS API' : service === 'stt' ? 'STT API' : 'Realtime API';
+
+  return (
+    <section id="api-status">
+      <h2>API Connection Status</h2>
+      <div className="status">
+        This tests the runtime configuration Saeed actually uses. It shows the provider,
+        model, endpoint and the result of a live connectivity check. API keys are never displayed.
+      </div>
+      <div className="row" style={{ marginTop: 8 }}>
+        <button className="primary" disabled={busy} onClick={() => void testAll()}>
+          {busy ? 'Testing…' : 'Test All APIs'}
+        </button>
+      </div>
+      <div className="api-status-grid">
+        {(['brain', 'tts', 'stt', 'realtime'] as ApiStatusResult['service'][]).map((service) => {
+          const result = results.find((x) => x.service === service);
+          return (
+            <div className="provider-card" key={service}>
+              <div className="provider-header">
+                <span className="name">{label(service)}</span>
+                <span className={`badge ${result ? (result.connected ? 'ok' : 'warn') : 'warn'}`}>
+                  {result ? (result.connected ? 'Connected' : 'Failed') : 'Not tested'}
+                </span>
+              </div>
+              <div className="provider-body">
+                <div className="status"><strong>Provider:</strong> {result?.provider ?? '—'}</div>
+                <div className="status"><strong>Model:</strong> {result?.model ?? '—'}</div>
+                <div className="status"><strong>Endpoint:</strong> {result?.endpoint ?? '—'}</div>
+                {result?.latencyMs !== undefined && <div className="status"><strong>Latency:</strong> {result.latencyMs} ms</div>}
+                <div className="status"><strong>Test:</strong> {result?.test ?? '—'}</div>
+                {result && <div className={`status ${result.connected ? 'ok' : 'warn'}`}>{result.detail}</div>}
+                <button className="secondary" disabled={busy} onClick={() => void testOne(service)}>Test {label(service)}</button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
 
 function ProviderCard(props: {
   info: ProviderInfoForUi;
@@ -1120,6 +1189,7 @@ function App(): React.ReactElement {
         {tab === 'brain' && (
         <section id="brain">
           <h2>Brain (Autonomous LLM)</h2>
+          <ApiStatusPanel />
           <div className="status">
             <strong>Independent of the Chat LLM at the top of this window.</strong>{' '}
             The Brain is what decides what Saeed does <em>while you&apos;re NOT
