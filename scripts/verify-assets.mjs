@@ -89,7 +89,18 @@ async function verifyPackage() {
 
   const asar = (await import('@electron/asar')).default ?? (await import('@electron/asar'));
   const inner = join('out', BUILT_GLB_REL).replaceAll('\\', '/');
-  const buf = asar.extractFile(asarPath, inner);
+  let buf;
+  try {
+    buf = asar.extractFile(asarPath, inner);
+  } catch {
+    const unpackedPath = join(ROOT, 'dist', 'win-unpacked', 'resources', 'app.asar.unpacked', inner);
+    try {
+      buf = await readFile(unpackedPath);
+      console.log(`package: using unpacked asset: ${unpackedPath}`);
+    } catch {
+      throw new Error(`package: ${inner} missing from app.asar and app.asar.unpacked`);
+    }
+  }
   if (!buf || buf.length < MIN_BYTES) throw new Error(`package: ${inner} missing or too small`);
   const animations = parseGlb(buf, 'package');
   console.log(`package: OK (${buf.length} bytes; animations: ${animations.join(', ')})`);
