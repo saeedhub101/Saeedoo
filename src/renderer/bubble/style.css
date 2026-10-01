@@ -289,10 +289,10 @@ body.drop-target .balloon::before {
 /* --- Tail directions --- */
 
 /* --tail-offset is a 0-1 fraction along the chosen edge of the bubble, set
-   by main.ts on every move-sync tick so the tail tracks Merlin even when
+   by main.ts on every move-sync tick so the tail tracks Saeed even when
    he isn't aligned with the bubble's midpoint. Defaults to 0.5 (midpoint). */
 
-/* Default RIGHT: Merlin to our right. Vertical position tracks --tail-offset. */
+/* Default RIGHT: Saeed to our right. Vertical position tracks --tail-offset. */
 .balloon-tail {
   position: absolute;
   right: -18px;
