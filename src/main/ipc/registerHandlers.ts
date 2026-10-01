@@ -52,6 +52,7 @@ import { loadHistory, getHistorySnapshot } from '../storage/conversationStore';
 import { registerAudioStateIpc } from '../voice/audioState';
 import { registerBrainWizardHandlers } from './brainWizardHandlers';
 import { logger } from '../logger';
+import { testApiService, testAllApiServices } from '../apiStatus';
 
 export function registerIpcHandlers(): void {
   // Renderer-side audio-queue state updates feed the speaking-cycle gate.
@@ -398,6 +399,14 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(IPC.settingsGetSapiVoices, async () => {
     return getSapiVoices();
+  });
+
+  ipcMain.handle(IPC.settingsTestApi, async (_e, service) => {
+    return testApiService(service);
+  });
+
+  ipcMain.handle(IPC.settingsTestAllApis, async () => {
+    return testAllApiServices();
   });
 
   ipcMain.handle(IPC.settingsGetProviderInfo, async () => {
