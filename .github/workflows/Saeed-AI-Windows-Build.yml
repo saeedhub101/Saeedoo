@@ -86,6 +86,15 @@ jobs:
           Write-Host "NSIS: $((Get-Item $nsis).Length) bytes"
           Write-Host "Portable: $((Get-Item $portable).Length) bytes"
 
+      - name: Upload runtime diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Saeed-runtime-diagnostics-v${{ steps.version.outputs.version }}
+          path: ci-runtime-report.json
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
