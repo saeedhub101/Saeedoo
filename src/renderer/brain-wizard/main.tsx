@@ -207,9 +207,9 @@ function App(): React.ReactElement {
   function renderIntro(): React.ReactElement {
     return (
       <>
-        <h2>Pick Merlin's brain</h2>
+        <h2>Pick Saeed's brain</h2>
         <p>
-          Merlin's brain decides what he does when you're not actively chatting —
+          Saeed's brain decides what he does when you're not actively chatting —
           when to wander, when to muse, when to look around. Pick how that brain
           should work:
         </p>
@@ -247,7 +247,7 @@ function App(): React.ReactElement {
           </div>
           <div className="desc">
             A small language model running on your own computer (via Ollama)
-            decides what Merlin does at each idle tick. Free, private, works
+            decides what Saeed does at each idle tick. Free, private, works
             offline once installed. We'll help you pick a model and pull it.
           </div>
         </div>
@@ -265,7 +265,7 @@ function App(): React.ReactElement {
             Hermes Agent (self-hosted)
           </div>
           <div className="desc">
-            Point Merlin's brain at a Hermes Agent profile you (or someone you
+            Point Saeed's brain at a Hermes Agent profile you (or someone you
             trust) hosts. Uses the OpenAI-compatible API. For users already
             running Hermes — picks up your existing profile.
           </div>
@@ -399,7 +399,7 @@ function App(): React.ReactElement {
         ) : null}
 
         <div className="field-row">
-          <label htmlFor="oll-endpoint">Or point Merlin at a specific endpoint</label>
+          <label htmlFor="oll-endpoint">Or point Saeed at a specific endpoint</label>
           <input
             id="oll-endpoint"
             type="text"
@@ -634,7 +634,7 @@ function App(): React.ReactElement {
         <>
           <h2>Testing the model</h2>
           <p className="muted">
-            Asking Merlin's brain a quick question to make sure it works end-to-end…
+            Asking Saeed's brain a quick question to make sure it works end-to-end…
           </p>
           <div className="progress-shell">
             <div className="progress-line">⏳ Waiting for first reply…</div>
@@ -666,7 +666,7 @@ function App(): React.ReactElement {
           ) : (
             <p>
               The model was downloaded but didn't respond cleanly. You can still
-              apply this config — Merlin's brain will silently fall back to no-op
+              apply this config — Saeed's brain will silently fall back to no-op
               on each failed tick, so nothing breaks. Or pick a different model.
             </p>
           )}
@@ -743,7 +743,7 @@ function App(): React.ReactElement {
       <>
         <h2>All set</h2>
         <div className="alert ok">
-          ✓ Merlin's brain is ready to go.
+          ✓ Saeed's brain is ready to go.
         </div>
         <p className="muted">
           {choice === 'default' &&
@@ -751,9 +751,9 @@ function App(): React.ReactElement {
           {choice === 'local-llm' && (
             <>
               Local-LLM brain will tick every ~5 minutes while you're idle and
-              ask <code>{localModel}</code> what Merlin should do. If anything
+              ask <code>{localModel}</code> what Saeed should do. If anything
               goes wrong (Ollama stopped, model deleted), the brain falls back
-              silently to no-op and Merlin keeps working.
+              silently to no-op and Saeed keeps working.
             </>
           )}
           {choice === 'hermes' && (
@@ -786,7 +786,7 @@ function App(): React.ReactElement {
                 style={{ marginTop: 3 }}
               />
               <span>
-                <strong>Also use this model when I chat with Merlin</strong>
+                <strong>Also use this model when I chat with Saeed</strong>
                 <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
                   Sets the Chat (Conversational) LLM provider to Ollama with{' '}
                   <code>{localModel}</code> at <code>{ollamaEndpoint}</code>.
@@ -852,7 +852,7 @@ function App(): React.ReactElement {
       <>
         <h2>Configure Hermes</h2>
         <p className="muted">
-          Point Merlin at any Hermes Agent endpoint. Format is{' '}
+          Point Saeed at any Hermes Agent endpoint. Format is{' '}
           <code>http://host:port/v1</code>. Use the discovery button if you have
           multiple profiles running.
         </p>
@@ -1021,7 +1021,7 @@ function App(): React.ReactElement {
       <header>
         <h1>🧙 Brain Setup Wizard</h1>
         <div className="subtitle">
-          Decide how Merlin thinks when you're not chatting with him.
+          Decide how Saeed thinks when you're not chatting with him.
         </div>
       </header>
       <main>
