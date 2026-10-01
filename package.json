@@ -1,6 +1,6 @@
 {
   "name": "saeed",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Saeed — a Windows desktop AI companion inspired by classic animated assistants, rebuilt with modern LLM, voice, brain, tools, and customizable characters.",
   "main": "out/main/index.js",
   "author": "Saeed O. Almansour",
