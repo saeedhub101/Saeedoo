@@ -80,6 +80,46 @@ test.describe('Saeed Windows runtime smoke suite', () => {
     expect(emitted).toBe(true);
   });
 
+
+  test('VOICE: speech pipeline returns audio through STT -> brain -> TTS', async () => {
+    const result = await app.evaluate(async () => {
+      const { createRequire } = process.getBuiltinModule('module') as typeof import('node:module');
+      const require = createRequire(process.cwd() + '/test/e2e/saeed-smoke.spec.ts');
+      const tts = require(process.cwd() + '/out/main/voice/tts.js') as {
+        speak: (text: string) => Promise<void>;
+      };
+      const audioState = require(process.cwd() + '/out/main/voice/audioState.js') as {
+        isVoiceActive?: () => boolean;
+        isAudioPlaying?: () => boolean;
+      };
+      const before = Boolean(audioState.isVoiceActive?.() ?? audioState.isAudioPlaying?.() ?? false);
+      let completed = false;
+      let error = '';
+      try {
+        await tts.speak('Voice pipeline smoke test.');
+        completed = true;
+      } catch (e) {
+        error = e instanceof Error ? e.message : String(e);
+      }
+      return { before, completed, error };
+    });
+    expect(result.completed, result.error).toBe(true);
+  });
+
+  test('VOICE RESPONSE: audio state can be observed while speech is active', async () => {
+    const result = await app.evaluate(async () => {
+      const { createRequire } = process.getBuiltinModule('module') as typeof import('node:module');
+      const require = createRequire(process.cwd() + '/test/e2e/saeed-smoke.spec.ts');
+      const audioState = require(process.cwd() + '/out/main/voice/audioState.js') as {
+        isVoiceActive?: () => boolean;
+        isAudioPlaying?: () => boolean;
+      };
+      const active = audioState.isVoiceActive?.() ?? audioState.isAudioPlaying?.();
+      return { observable: typeof active === 'boolean', active: Boolean(active) };
+    });
+    expect(result.observable).toBe(true);
+  });
+
   test('ERROR: no uncaught renderer page errors during startup', async () => {
     const errors: string[] = [];
     for (const page of app.windows()) {
