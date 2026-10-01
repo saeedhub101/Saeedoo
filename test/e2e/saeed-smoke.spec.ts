@@ -17,14 +17,6 @@ test.describe('Saeed Windows runtime smoke suite', () => {
     await app?.close();
   });
 
-  async function requireMain<T>(path: string): Promise<T> {
-    return app.evaluate((modulePath) => {
-      const { createRequire } = process.getBuiltinModule('module') as typeof import('node:module');
-      const require = createRequire(process.cwd() + '/test/e2e/saeed-smoke.spec.ts');
-      return require(modulePath) as T;
-    }, path);
-  }
-
   test('SMOKE: Electron starts and creates the character window', async () => {
     const page = await app.firstWindow({ timeout: 60_000 });
     await page.waitForLoadState('domcontentloaded');
@@ -73,12 +65,6 @@ test.describe('Saeed Windows runtime smoke suite', () => {
   });
 
   test('LLM: provider registry is valid and real streaming is exercised when configured', async () => {
-    const llm = await requireMain<{
-      PROVIDERS: Record<string, { defaultModel: string }>;
-      isLLMConfigured: () => Promise<boolean>;
-      streamChat: (opts: { history: Array<{ role: 'user' | 'assistant'; content: string }> }) => AsyncGenerator<string>;
-    }>(process.cwd() + '/out/main/llm/providerRegistry.js');
-
     const result = await app.evaluate(async ({ llmPath }) => {
       const { createRequire } = process.getBuiltinModule('module') as typeof import('node:module');
       const require = createRequire(process.cwd() + '/test/e2e/saeed-smoke.spec.ts');
@@ -115,10 +101,12 @@ test.describe('Saeed Windows runtime smoke suite', () => {
   });
 
   test('BRAIN: force-tick path executes without crashing', async () => {
-    const brain = await requireMain<{ forceTickActiveBrain: () => Promise<string> }>(
-      process.cwd() + '/out/main/brainSupervisor.js',
-    );
-    const result = await brain.forceTickActiveBrain();
+    const result = await app.evaluate(async ({ brainPath }) => {
+      const { createRequire } = process.getBuiltinModule('module') as typeof import('node:module');
+      const require = createRequire(process.cwd() + '/test/e2e/saeed-smoke.spec.ts');
+      const brain = require(brainPath) as { forceTickActiveBrain: () => Promise<string> };
+      return brain.forceTickActiveBrain();
+    }, { brainPath: process.cwd() + '/out/main/brainSupervisor.js' });
     expect(typeof result).toBe('string');
     expect(result.length).toBeGreaterThan(0);
   });
